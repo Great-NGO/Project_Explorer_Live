@@ -1,0 +1,16 @@
+{
+    "/": "API DOCs for NGO-TECH Project Explorer",
+    "/api/signup": "Signup (POST request)",
+    "/api/login": "Login (POST request)",
+    "/api/logout": "Logout (GET request)",
+    "/api/programs": "Get all programs",
+    "/api/graduationYears": "Get all graduation Years",
+    "/api/user/:userId": "Get user by id",
+    "/api/editProfile/:userId": "Edit User profile by id (PUT request) (Authentication required)",
+    "/api/projectsShowcase": "Get last 4 projects",
+    "/api/project/:id": "Get project by id",
+    "/api/projects/submit": "Create a new project (Authentication required)",
+    "/api/editProject/:id": "Edit a project (Only Logged in users who are project owners can edit)",
+    "/api/deleteProject/:id": "Delete a project (Only Logged in users who are project owners can delete)",
+    "*": "Every other route is invalid and doesn't exist"
+}

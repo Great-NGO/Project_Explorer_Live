@@ -1,0 +1,1 @@
+This Uploads folder is where images are saved to before they are uploaded to cloudinary and deleted from this folder.
