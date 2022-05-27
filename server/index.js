@@ -63,12 +63,14 @@ app.use('/api', require("./controllers/project"));
 app.use("/api/uploads", express.static('api/uploads'));
 // app.use("/api/uploads", express.static('uploads'));      //Would use when i upload to cloudinary
 console.log("PATH ", path.join(__dirname, '/api/uploads'));
-
+const clientBuildUrl = path.join(__dirname, "..", '/client/build')
+// console.log("AAA - ", clientBuildUrl);
+console.log(path.resolve(__dirname, "../client", "build", "index.html") );
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {
     //Set static folder
-    app.use(express.static("../client/build"));
+    app.use(express.static(clientBuildUrl));
     app.get("*", (req, res) => {
       res.sendFile(
         path.resolve(__dirname, "../client", "build", "index.html")
