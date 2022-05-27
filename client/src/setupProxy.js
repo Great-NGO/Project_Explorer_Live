@@ -5,6 +5,7 @@ module.exports = function(app) {
         '/api',
         createProxyMiddleware({
             target: 'http://localhost:4000',
+            // target: 'https://ngotechprojectexplorer.herokuapp.com',
             changeOrigin: true,
         })
     );

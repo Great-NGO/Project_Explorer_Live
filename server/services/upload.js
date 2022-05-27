@@ -6,7 +6,7 @@ const { v4 } = require('uuid')
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         // cb(null, './uploads')
-        cb(null, './api/uploads')   //To make the image accessible even while on localhost
+        cb(null, './server/api/uploads')   //To make the image accessible even while on localhost
     },
     filename: function(req, file, cb) {
         const fileName = file.originalname.toLowerCase().split(' ').join('-')

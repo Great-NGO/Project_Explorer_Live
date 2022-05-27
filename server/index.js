@@ -1,6 +1,6 @@
 //Load database configuration file and allow us read environment variables
 require('dotenv').config();
-require('./config/database').connect();
+const { connectToDB } = require("./config/database");
 
 const express = require('express');
 const app = express();
@@ -9,14 +9,26 @@ const PORT = process.env.PORT || process.env.SERVER_PORT
 const cookieParser = require("cookie-parser");
 const path = require('path');   //The path module
 const fs = require("fs");
-// const cors = require('cors');
+const cors = require('cors');
 
 // To allow CORS
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next()
-});
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//     next()
+// });
+
+// Cors configuration
+const corsOptions = {
+    origin: [
+      "http://localhost:3000",
+    //   "https://ngotechprojectexplorer.herokuapp.com"
+    ],
+    credentials: true, //access-control-allow-credentials:true
+    optionSuccessStatus: 200,
+  };
+// // To allow CORS
+app.use(cors(corsOptions));
 // app.use(cors());
 
 //To allow json requests and decode requests from forms
@@ -27,8 +39,10 @@ app.use(cookieParser());
 
 
 // Api Docs
-app.get("/", (req, res) =>  {
-    fs.readFile('api/docs/apiDocs.json', (err, data) => {
+app.get("/api", (req, res) =>  {
+    const apiDocsFile = path.join(__dirname, '/api/docs/apiDocs.json')
+
+    fs.readFile(apiDocsFile, (err, data) => {
         if(err) {
             res.status(400).json({error:err})
         }
@@ -49,23 +63,54 @@ app.use('/api', require("./controllers/project"));
 app.use("/api/uploads", express.static('api/uploads'));
 // app.use("/api/uploads", express.static('uploads'));      //Would use when i upload to cloudinary
 console.log("PATH ", path.join(__dirname, '/api/uploads'));
-// app.use(express.static(path.join(__dirname, 'uploads')))
-// app.use("/uploads", express.static('uploads'));
 
 
+// Serve static assets if in production
+if (process.env.NODE_ENV === "production") {
+    //Set static folder
+    app.use(express.static("../client/build"));
+    app.get("*", (req, res) => {
+      res.sendFile(
+        path.resolve(__dirname, "../client", "build", "index.html")
+      );
+    });
+  }
+  
 //Invalid Route     //NB: using app.use instead of app.get/post handles all wrong requests and throws the message
 app.use('*', (req, res) => {
     res.status(404).send({error: "Route does not exist"})
 })
 
-//Server setup
-const server = http.createServer(app)
-//If any error in starting server
-server.on('error', (err) => {
+// Logging the rejected field from multer error
+app.use((error, req, res, next) => {
+    console.log("This is the rejected field ->", error);
+    // console.log("This is the rejected field ->", error.field);
+    res.status(400).json({ error: "Multer Error. Unexpected field -  ", error });
+  });
+  
+  //Server and Database setup
+  const server = http.createServer(app);
+  // Only start server after connection to database has been established
+  connectToDB()
+    .then(() => {
+      //Starting Server/Listening to server
+      server.listen(PORT, () => {
+        console.log(`Server listening on PORT ${PORT}`);
+      });
+    })
+    .catch(() => {
+      console.log("Database connection failed!");
+    });
+  
+  //If any error in starting server
+  server.on("error", (err) => {
     console.log(`Error Present: ${err}`);
     process.exit(1);
-})
-//Starting Server/Listening to server
-server.listen(PORT, () => {
-    console.log(`Server listening on PORT ${PORT}`);
-})
+  });
+  
+  // If any unhandledRejection in our process Event
+  process.on("unhandledRejection", (error) => {
+    console.error("UNHANDLED REJECTION! Shutting down...", error);
+    process.exit(1);
+  });
+  

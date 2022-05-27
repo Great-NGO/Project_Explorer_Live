@@ -21,7 +21,11 @@ router.get('/project/:id', async (req, res) => {
     const { id } = req.params;
     const project = await getProjectById(id);
     console.log('The specific project', project);
-    res.json({project})
+    if(project[0] !== false) {
+        res.json({project:project[1], status:"OK"});
+    } else {
+        return res.status(400).json({error: project[1], status: "error"})
+    }
 })
 
 router.post('/projects/submit', authorize, createProjectValidator(), validate, async (req, res) => {
@@ -62,7 +66,7 @@ router.put('/editProject/:id', authorize, createProjectValidator(), validate, as
     const userId = req.user.user_id;
 
     const project = await getProjectById(id);
-    let createdById = project.createdBy._id;
+    let createdById = project[1].createdBy._id;
 
     createdById = createdById.toString();   
 
