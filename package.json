@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix ../client && npm run build --prefix ../client"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false cd client && npm install && npm run build"
 
   },
   "author": "NGO Tech",
@@ -32,5 +32,8 @@
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
     "uuid": "^8.3.2"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
