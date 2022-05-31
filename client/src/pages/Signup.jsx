@@ -292,7 +292,7 @@ const Signup = () => {
             {/* <Form> */}
             <Button variant="primary" type="submit">
               <span> <Facebook size={22} /> </span>
-              <a href="/auth/facebook" style={{ color: "white", textDecoration: "none" }} >
+              <a href="#/auth/facebook" style={{ color: "white", textDecoration: "none" }} >
                 Signup with Facebook
               </a>
             </Button>

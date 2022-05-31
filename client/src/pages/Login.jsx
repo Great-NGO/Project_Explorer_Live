@@ -224,7 +224,7 @@ const Login = () => {
               {/* <Form> */}
                 <Button variant="primary" type="submit">
                   <span> <Facebook size={22} /> </span>
-                  <a href="/auth/facebook" style={{color:"white", textDecoration: "none"}} > Login with Facebook  </a>
+                  <a href="#/auth/facebook" style={{color:"white", textDecoration: "none"}} > Login with Facebook  </a>
                 </Button>
               {/* </Form> */}
 
