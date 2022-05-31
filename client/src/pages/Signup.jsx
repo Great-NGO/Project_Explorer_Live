@@ -187,7 +187,7 @@ const Signup = () => {
                  
 
             <Row>
-              <Form.Group as={Col} controlId="formGridFirstName">
+              <Form.Group as={Col} controlId="formGridFirstName" sm={6}>
                 <Form.Label>First Name</Form.Label>
                 <Form.Control
                   type="text"
@@ -199,7 +199,7 @@ const Signup = () => {
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridLastName">
+              <Form.Group as={Col} controlId="formGridLastName" sm={6}>
                 <Form.Label>Last Name</Form.Label>
                 <Form.Control
                   type="text"
@@ -213,7 +213,7 @@ const Signup = () => {
             </Row>
 
             <Row>
-              <Form.Group as={Col} controlId="formGroupEmail">
+              <Form.Group as={Col} controlId="formGroupEmail" sm={6}>
                 <Form.Label>Email Address</Form.Label>
                 <Form.Control
                   type="email"
@@ -225,7 +225,7 @@ const Signup = () => {
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridPassword">
+              <Form.Group as={Col} controlId="formGridPassword" sm={6}>
                 <Form.Label>Password</Form.Label>
                 <Form.Control
                   type="password"
@@ -239,7 +239,7 @@ const Signup = () => {
             </Row>
 
             <Row>
-              <Form.Group as={Col} controlId="formGridProgram">
+              <Form.Group as={Col} controlId="formGridProgram" sm={4}>
                 <Form.Label>Program</Form.Label>
                 <Form.Control as="select"
                   name="program"
@@ -254,7 +254,7 @@ const Signup = () => {
                 </Form.Control>
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridMatricNo">
+              <Form.Group as={Col} controlId="formGridMatricNo" sm={4}>
                 <Form.Label>Matriculation Number</Form.Label>
                 <Form.Control
                   placeholder="e.g 16/2020"
@@ -265,7 +265,7 @@ const Signup = () => {
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridGradYear">
+              <Form.Group as={Col} controlId="formGridGradYear" sm={4}>
                 <Form.Label>Graduation Year</Form.Label>
                 <Form.Control
                   as="select"
