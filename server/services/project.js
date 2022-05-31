@@ -50,26 +50,47 @@ const getProjectById = async(id) => {
         if(project !== null) {
             return [true, project]
         } else {
-            
+            return [false, "Project doesn't exist. It is null and/or has been deleted."]
         }
     } catch (error) {
         console.log(error);
-        return translateError(error)
+        return [false, translateError(error)];
     }
 }
 
 /* Update Project */
 const updateProject = async (id, fields) => {
-    const project = await Project.findByIdAndUpdate(id, fields, {new: true});
-    return project
+    try {
+        const updatedProject = await Project.findByIdAndUpdate(id, fields, {new: true});
+        if(updatedProject !== null) {
+            return [true, updatedProject]
+
+        } else {
+            return [false, "Project doesn't exist. It is null and/or has been deleted."]
+        }
+    } catch (error) {
+        return [false, translateError(error)];
+    }
+
 }
 
 /* Delete Project */
-const deleteProject = async (id) => await Project.findByIdAndDelete(id)
-// const deleteProject = async (id) => {
-//     await Project.findByIdAndDelete(id)
-//     // Would also have to delete comments id and replies and notifications under a particular project
-// }
+const deleteProject = async (id) => {
+    try {
+        const deletedProject = await Project.findByIdAndDelete(id)
+        if(deletedProject) {
+            // Would also have to delete comments id and replies and notifications under a particular project
+            return [true, deletedProject]
+        } else{
+            return [false, "Project doesn't exist. It is null and/or has been deleted."]
+
+        }
+
+    } catch (error) {
+        return [false, translateError(error)];
+        
+    }
+}
 
 module.exports = {
     createProject,

@@ -1,6 +1,8 @@
 import React, { useContext, useState } from "react";
-import { Alert } from "react-bootstrap";
-import GoogleLogin from "react-google-login";
+import { Alert, Button } from "react-bootstrap";
+// import GoogleLogin from "@react-oauth/google";
+import {useGoogleLogin} from "@react-oauth/google";
+
 import { generatePath, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/ReferenceDataContext";
 import AuthService from "../services/auth";
@@ -23,8 +25,7 @@ const GoogleButton = ({text}) => {
     const res = await fetch("/api/google-login", {
       method: "POST",
       body: JSON.stringify({
-        token: response.tokenId,
-        googleId: response.googleId,
+        credential: response.credential
       }),
       headers: {
         "Content-Type": "application/json",
@@ -66,6 +67,11 @@ const GoogleButton = ({text}) => {
     }
   };
 
+const login = useGoogleLogin({
+    onSuccess: tokenResponse => handleClick(tokenResponse),
+    flow: 'auth-code',
+  });
+
   return (
     <div className="mt-2">
         {
@@ -75,14 +81,21 @@ const GoogleButton = ({text}) => {
             </Alert> : null
         }
 
-      <GoogleLogin
-        clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+      {/* <useGoogleLogin
+        
         buttonText={text}
-        onSuccess={handleClick}
-        onFailure={handleClick}
-        // onFailure={handleGoogleFailure}
-        cookiePolicy={"single_host_origin"}
-      ></GoogleLogin>
+        onSuccess={(credentialResponse) => {
+          handleClick(credentialResponse)
+        }}
+        onError={() => {
+          
+        }}
+
+      ></useGoogleLogin> */}
+
+      <Button text={text} onClick={login}>
+          {text}
+      </Button>
     </div>
   );
 };

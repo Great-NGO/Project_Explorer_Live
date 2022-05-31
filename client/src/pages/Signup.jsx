@@ -1,12 +1,15 @@
-import React,{ useState, useReducer} from "react";
+import React,{ useState, useReducer, useContext} from "react";
 import useFetch from "../services/useFetch";
 import Layout from "./shared/Layout";
 import { Form, Col, Button, Container, Row, Alert } from "react-bootstrap";
 import { Facebook} from "react-bootstrap-icons";
 // import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, generatePath } from 'react-router-dom';
 // Import our Google Button component which handles Signup/Login with Google
-import GoogleButton from "../components/GoogleButton";
+import { GoogleLogin } from "@react-oauth/google";
+import { UserContext } from "../context/ReferenceDataContext";
+import AuthService from "../services/auth";
+const { setWithExpiry } = AuthService;
 
 const Signup = () => {
 
@@ -103,6 +106,60 @@ const Signup = () => {
       })
 
   }
+
+  // For Google
+  
+    //Use the useContext hook, get the setFirstname and setProfile picture from it for Google Signup
+    const { setFirstName } = useContext(UserContext).value1;
+    const { setProfilePicture } = useContext(UserContext).value2;
+  
+    const handleGoogleClick = async (response) => {
+      console.log("The Google data ", response);
+      const res = await fetch("/api/google-login", {
+        method: "POST",
+        body: JSON.stringify({
+          credential: response.credential
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      const data = await res.json();
+      console.log("The data from Google button - ", data);
+  
+      if (data.status === "OK") {
+        if (
+          data.redirectToContinueSignup === false &&
+          data.user.matricNumber !== undefined &&
+          data.user.graduationYear !== undefined
+        ) {
+          console.log("WOW from Google Component ");
+          setFirstName(data.user.firstname);
+          setProfilePicture(data.user.profilePicture);
+          setWithExpiry("user", data.user);
+          //Redirect User to Home Page
+          navigate("/");
+        } else {
+          console.log("User has not been signed up before");
+          //Redirect User to the Continue Signup page
+          let id = data.user._id;
+  
+          setFirstName(data.user.firstname);
+          setProfilePicture(data.user.profilePicture);
+          setWithExpiry("user", data.user);
+  
+          const path = generatePath("/continueSignup/:id", { id: id });
+          console.log("The path ", path);
+  
+          navigate(path, { replace: true });
+        }
+      } else {
+        console.log("The error ", data.error);
+        dispatch({ type: "error", payload: ["Google Signup Failed. Something went wrong."] });
+      
+      }
+    };
   
   return (
     <Layout>
@@ -244,7 +301,17 @@ const Signup = () => {
             
           </div>
 
-          <GoogleButton text={"Signup With Google"}></GoogleButton>
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {   
+              console.log("Response -- ", credentialResponse)     
+              handleGoogleClick(credentialResponse);
+            }}
+            onError={() => {
+              console.log("Login Failed");
+              alert("Failed to sign up with Google. Something went wrong")
+            }}
+            text="signup_with"
+          />
 
         </main>
       </Container>

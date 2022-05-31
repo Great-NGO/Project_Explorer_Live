@@ -21,8 +21,8 @@ const cors = require('cors');
 // Cors configuration
 const corsOptions = {
     origin: [
-    //   "http://localhost:3000",
-      "https://ngotechprojectexplorer.herokuapp.com"
+      "http://localhost:3000",
+      // "https://ngotechprojectexplorer.herokuapp.com"
     ],
     credentials: true, //access-control-allow-credentials:true
     optionSuccessStatus: 200,
@@ -58,13 +58,9 @@ app.use('/api', require("./controllers/home"));
 app.use('/api', require("./controllers/user"));
 app.use('/api', require("./controllers/project"));
 
-
 // To show public files/Files from uploads folder
-app.use("/api/uploads", express.static('api/uploads'));
-// app.use("/api/uploads", express.static('uploads'));      //Would use when i upload to cloudinary
-console.log("PATH ", path.join(__dirname, '/api/uploads'));
+app.use("/api/uploads", express.static('uploads'));      //Would use when i upload to cloudinary
 const clientBuildUrl = path.join(__dirname, "..", '/client/build')
-// console.log("AAA - ", clientBuildUrl);
 console.log(path.resolve(__dirname, "../client", "build", "index.html") );
 
 // Serve static assets if in production

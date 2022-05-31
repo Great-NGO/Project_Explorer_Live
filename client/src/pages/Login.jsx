@@ -2,10 +2,10 @@ import React, {useContext, useReducer} from "react";
 import Layout from "./shared/Layout";
 import {Form, Button, Container, Alert} from "react-bootstrap";
 import { Facebook } from "react-bootstrap-icons"; 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, generatePath } from 'react-router-dom';
 import { UserContext } from "../context/ReferenceDataContext";
 import AuthService from "../services/auth";
-import GoogleButton from "../components/GoogleButton";
+import { GoogleLogin } from "@react-oauth/google";
 // import FacebookLogin from 'react-facebook-login';
 
 const {setWithExpiry } = AuthService
@@ -86,11 +86,8 @@ const Login = () => {
         //Set the global state of the users firstname and profile picture when they login
         setFirstName(data.user.firstname);
         setProfilePicture(data.user.profilePicture);
-
-        //Set the user info in local storage
+        //Set the user info in local storage with timer
         setWithExpiry("user", data.user)
-        // localStorage.setItem("user", JSON.stringify(data.user));
-
         // Redirect User to Home page
         navigate('/',true) 
       }
@@ -104,11 +101,56 @@ const Login = () => {
   }
 
   /* GOOGLE AUTH CODES */
-  // console.log("Google client id - ", process.env.REACT_APP_GOOGLE_CLIENT_ID);
-  // const handleGoogleFailure = (result) => {
-  //   alert(result);
-  // }
 
+  // For Google
+  
+    const handleGoogleClick = async (response) => {
+      console.log("The Google data ", response);
+      const res = await fetch("/api/google-login", {
+        method: "POST",
+        body: JSON.stringify({
+          credential: response.credential
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      const data = await res.json();
+      console.log("The data from Google button - ", data);
+  
+      if (data.status === "OK") {
+        if (
+          data.redirectToContinueSignup === false &&
+          data.user.matricNumber !== undefined &&
+          data.user.graduationYear !== undefined
+        ) {
+          console.log("WOW from Google Component ");
+          setFirstName(data.user.firstname);
+          setProfilePicture(data.user.profilePicture);
+          setWithExpiry("user", data.user);
+          //Redirect User to Home Page
+          navigate("/");
+        } else {
+          console.log("User has not been signed up before");
+          //Redirect User to the Continue Signup page
+          let id = data.user._id;
+  
+          setFirstName(data.user.firstname);
+          setProfilePicture(data.user.profilePicture);
+          setWithExpiry("user", data.user);
+  
+          const path = generatePath("/continueSignup/:id", { id: id });
+          console.log("The path ", path);
+  
+          navigate(path, { replace: true });
+        }
+      } else {
+        console.log("The error ", data.error);
+        dispatch({ type: "error", payload: data.error });
+      }
+    };
+  
  
 
   // const handleFacebookLogin = async(facebookData) => {
@@ -186,23 +228,28 @@ const Login = () => {
                 </Button>
               {/* </Form> */}
 
-
-            
-         
-
               {/* <FacebookLogin
                 appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                 autoLoad={true}
                 // autoLoad={false}
                 callback={handleFacebookLogin}
               >
-
               </FacebookLogin> */}
 
-            
             </div>
+              
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {   
+                console.log("Response -- ", credentialResponse)     
+                handleGoogleClick(credentialResponse);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+                alert("Failed to sign up with Google. Something went wrong")
+              }}
+          
+            />
 
-              <GoogleButton text={"Login With Google"}></GoogleButton>
           </main>
         </Container>
     </Layout>

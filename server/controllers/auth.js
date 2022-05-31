@@ -8,14 +8,14 @@ const {
   continueSignupValidator,
   validate,
   
-} = require("../services/validation");
+} = require("../validator");
 
 //Auth middleware
 const authorize = require("../middleware/auth");
 
 // OAuth2Client Google Authentication
 const { OAuth2Client } = require("google-auth-library");
-const { FindUserByEmail, createUser, getUserById, findUserById, updateUser, updateUserPassword } = require("../services/user");
+const { FindUserByEmail, createUser, getUserById, updateUser, updateUserPassword } = require("../services/user");
 const { translateError } = require("../services/mongo_helper");
 
 const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_CLIENT_ID);
@@ -29,9 +29,9 @@ try {
         
     console.log("The req body for google login", req.body);
 
-    const { token, googleId } = req.body;
+    const { credential } = req.body;
     const ticket = await client.verifyIdToken({
-        idToken: token,
+        idToken: credential,
         audience: process.env.CLIENT_ID,
     });
     console.log("The ticket ", ticket);
@@ -46,14 +46,14 @@ try {
     let accountVerified = userSocialInfo.email_verified;
     let password = userSocialInfo.name;
     let profilePicture = userSocialInfo.picture;
-    let matricNumber = userSocialInfo.at_hash;
-    let googleID = googleId;
+    let matricNumber = userSocialInfo.sub;
+    let googleID = userSocialInfo.sub;
 
     let userExists = await FindUserByEmail(email);
     console.log("User exists ", userExists);
 
     // if(userExists[0] == true && userExists[1].program !== undefined && userExists[1].graduationYear !== undefined ) {
-    if(userExists[0] == true ) {
+    if(userExists[0] !== false ) {
         //The User already has an account
         userExists = userExists[1];
         // Create token
@@ -102,7 +102,7 @@ try {
 
 } catch (error) {
    console.log(error);
-   return res.status(400).json({error: "Something Went wrong", actualError: translateError(error), status: "NOT OK", note:"Check your internet connection" });
+   return res.status(400).json({error: "Something Went wrong", actualError: error, status: "NOT OK", note:"Check your internet connection" });
      
 }
 });
@@ -114,7 +114,7 @@ router.put('/continueSignup/:id', continueSignupValidator(), validate, async(req
     try {
         let { id } = req.params;
         // To make sure the id is valid
-        let user = await findUserById(id);
+        let user = await getUserById(id);
 
         if (user[0] !== false) {
             console.log("The ID from req params", id);
@@ -128,13 +128,13 @@ router.put('/continueSignup/:id', continueSignupValidator(), validate, async(req
             let updateRemainingUserDetails = await updateUser(id, {graduationYear, program, matricNumber});
             console.log("Updated profile ", updateRemainingUserDetails);
 
-            if(updateRemainingUserDetails&& updatePassword[0]==true) {
-                let user = updateRemainingUserDetails;
+            if(updateRemainingUserDetails[0]==true&& updatePassword[0]==true) {
+                let user = updateRemainingUserDetails[1];
                 user.token=undefined;
                 user.password=undefined;
                 console.log("The user to be sent to the frontend ", user);
     
-                res.status(200).json({message: "Continue Signup successful (Users correct info successfully saved)", status: "OK", user})
+                res.status(201).json({message: "Continue Signup successful (Users correct info successfully saved)", status: "OK", user})
             }          
         } else {
             return res.status(400).json({error: "Something went wrong.", actualError: user[1], status: "NOT OK"});

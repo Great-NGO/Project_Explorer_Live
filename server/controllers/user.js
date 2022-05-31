@@ -4,14 +4,15 @@ const express = require('express');
 const User = require("../models/user");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const { userSignupValidator, updateProfileValidator, validate, updatePasswordValidator, loginValidator, forgotPasswordValidator, resetPasswordValidator } = require('../services/validation');
+const { userSignupValidator, updateProfileValidator, validate, updatePasswordValidator, loginValidator, forgotPasswordValidator, resetPasswordValidator } = require('../validator');
 
 //Auth middleware
 const authorize = require("../middleware/auth");
-const { upload } = require('../services/upload');
+const { upload, uploadProfilePicToCloudinary, updateProfilePicture } = require('../services/upload');
 const fs = require('fs');
 const { getUserById, updateUser, authenticate, encryptPassword, updateUserPassword, createUser, FindUserByEmail } = require('../services/user');
 const { sendResetPwdMail } = require('../services/sendMail');
+const formidable = require("formidable");
 
 
 // To get a specific user details
@@ -19,7 +20,11 @@ router.get('/user/:id', async(req, res) => {
     const { id } = req.params;
     const user = await getUserById(id);
     console.log("The user ", user);
-    res.json({user})
+    if(user[0] !== false) {
+        res.json({status: "OK", data:user[1], user:user[1]});
+    } else {
+        return res.status(400).json({status: "error", error: user[1]})
+    }
 })
 
 router.post('/signup', userSignupValidator(), validate, async(req, res) => {
@@ -95,7 +100,7 @@ router.put('/editProfile/:id', authorize, upload.single('profilePicture'), updat
     console.log('Req.file ', req.file);
 
     // if(req.file.size > (7*1024*1024)) {     //7mb
-    if(req.file&&req.file.size > (3*1024*1024)) {     //7mb
+    if(req.file&&req.file.size > (7*1024*1024)) {     //7mb
         console.log("Image should not be more than 7mb");
         // fs.unlinkSync(req.file.path)        //Remove the file
         let filePath = req.file.path
@@ -112,65 +117,110 @@ router.put('/editProfile/:id', authorize, upload.single('profilePicture'), updat
     }
     else {
 
-        console.log("You did smt")
-
         let filePath = req.file&&req.file.path
-        console.log("FILE Path ", filePath)
-
-        console.log("Dirname ", __dirname + "\n Filename ", __filename)
 
         let { firstname, lastname, email, program, matricNumber, graduationYear } = req.body;
         let fields = { firstname, lastname, email, program, matricNumber, graduationYear };
 
         if(filePath !== undefined) {
-            fields.profilePicture = filePath
+            let foundUser = await getUserById(userId);
+            foundUser = foundUser[1];
+            console.log("The found User ", foundUser)
+
+            if(foundUser.picturePublicCloudinaryId !== undefined && foundUser.profilePicture !== process.env.DefaultProfilePicture) {
+               let newPic = await updateProfilePicture(foundUser.picturePublicCloudinaryId, filePath);
+               fields.profilePicture = newPic.url;
+               fields.picturePublicCloudinaryId = newPic.publicId;
+            } else {
+                let result = await uploadProfilePicToCloudinary(filePath);
+                fields.profilePicture = result.url;
+                fields.picturePublicCloudinaryId = result.publicId
+            }
         }
 
-        console.log("The fields - ", fields) 
-
         let check = await updateUser(userId, fields)
-
-        const user = check;
-        console.log("The user before removing secret info ", user)
-       
-        user.password =undefined; user.status = undefined;
-        user.accountVerified = undefined; 
-        user.token = undefined; 
-        user.createdAt = undefined;
-        user.updatedAt = undefined;
-        user.__v = undefined
-
-        console.log("The user after removing secret infor", user);
-
-        if(check) {
+        if(check[0] !== false) {
+            const user = check[1];
+            console.log("The user before removing secret info ", user)
+           
+            user.password =undefined; user.status = undefined;
+            user.accountVerified = undefined; 
+            user.token = undefined; 
+            user.createdAt = undefined;
+            user.updatedAt = undefined;
+            user.__v = undefined
+    
+            console.log("The user after removing secret infor", user);
             console.log("Updated User ", check);
             res.status(200).json({message: "User Profile updated successfully", status: "Update OK", user})
+            
+        } else {
+            return res.status(422).json({error: check[1], status: "error"})
         }
    
     }
 
 })
 
+
+// Trying Form Upload with Formidable
+// router.put('/editProfile/:id', authorize, async (req, res,) => {
+//     // console.log("Req ---", req);
+//     // console.log("Req body --", req.body);
+//     const formidableOptions = {
+//         keepExtensions: true,
+//         multiples: true,
+//         uploadDir: 'uploads',
+//         maxFileSize: 10*1024*1024
+//     }
+//     let form = formidable({keepExtensions:true, multiples:false, uploadDir: 'uploads', maxFileSize: 10*1024*1024})
+//     console.log("Formidable formm", form);
+//     form.parse(req, async(err, fields, files) => {
+
+//         console.log("The FIeldss ", fields);
+//         console.log("The Filessss ", files);
+//         if(err) {
+//             console.log("The Error ", err);
+//         } else {
+//             res.json(fields);
+//         }
+//     }) 
+
+// })
+
 router.put('/removeProfilePicture/:id', authorize, async (req, res ) => {
     let { id } = req.params;
 
     let user = await getUserById(id);
 
-    let removeProfilePic = process.env.DefaultProfilePicture;
-    console.log("The profile picture ", removeProfilePic);
-    console.log("The User to remove profile picture ", user)
+    if(user[0] !== false) {
+        user = user[1]
+        let removeProfilePic = process.env.DefaultProfilePicture;
+        console.log("The profile picture ", removeProfilePic);
+        console.log("The User to remove profile picture ", user)
+    
+        if(user.profilePicture === removeProfilePic) {
+            return res.status(400).json({errors: ["You have no profile Picture"]});
+        }
 
-    if(user.profilePicture === removeProfilePic) {
-        return res.status(400).json({errors: ["You have no profile Picture"]});
+        user.profilePicture = removeProfilePic;
+        let updatedUser = await updateUser(id, user);
+        if(updatedUser[0] !== false) {
+            updatedUser = updatedUser[1];
+        
+            console.log("The updated User ", updatedUser);
+            updatedUser.password = undefined; updatedUser.status = undefined; updatedUser.createdAt = undefined; updatedUser.updatedAt = undefined; updatedUser.__v = undefined; updatedUser.token = undefined; updatedUser.accountVerified= undefined;
+            console.log("The updated user to be sent the frontend ", updatedUser);
+        
+            res.json({message: "Profile pic removed", status: "Update OK", user:updatedUser})       
+        } else {
+            return res.status(400).json({errors: ["Failed to remove Profile picture. Something went wrong. "], error: updatedUser[1], status: "error"})
+        }
+    
+    } else {
+        return res.status(400).json({error: user[1], status:"error"})
     }
-    user.profilePicture = removeProfilePic;
-    let updatedUser = await updateUser(id, user);
 
-    console.log("The updated User ", updatedUser);
-    updatedUser.password = undefined; updatedUser.status = undefined; updatedUser.createdAt = undefined; updatedUser.updatedAt = undefined; updatedUser.__v = undefined; updatedUser.token = undefined; updatedUser.accountVerified= undefined;
-    console.log("The updated user to be sent the frontend ", updatedUser);
-
-    res.json({message: "Profile pic removed", status: "Update OK", user:updatedUser})
 
 })
 

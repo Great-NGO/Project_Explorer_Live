@@ -128,6 +128,14 @@ const CreateProject = () => {
 
   }
 
+  const handleFileChange = (evt) => {
+    const {name, value, files} = evt.target;
+    console.log("Event", evt + "Value", value);
+
+    // dispatch({type: 'profilePicture', fieldName:name, payload:files[0]})
+  }
+  
+
   return (
     <Layout>
       <Container fluid="md ">
@@ -185,6 +193,13 @@ const CreateProject = () => {
                 onChange={handleInputChange}
               />
             </Form.Group>
+
+            <div className="row col-md-12">
+              <Form.Group controlId="formFile" className="mb-3 col-md-12">
+                <Form.Label>Upload Project File</Form.Label>
+                <Form.Control type="file" name="projectFile" accept=".doc,.docx, application/msword, .pdf" onChange={handleFileChange}/>
+              </Form.Group>
+            </div>
 
             <Button variant="primary" type="submit">
               Submit

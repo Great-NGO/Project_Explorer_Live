@@ -22,7 +22,10 @@ const UserSchema = new Schema(
     token: { type: String },
     // salt: { type: String, required: true },
     profilePicture: { type: String, default: 'https://res.cloudinary.com/ngotech-dev/image/upload/v1638195018/main/avatar_yceqqb.png' },
+    picturePublicCloudinaryId: { type: String}
+    
     // notification: [{}]
+
   },
   { timestamps: true }
 );

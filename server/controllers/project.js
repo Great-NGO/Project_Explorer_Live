@@ -4,7 +4,7 @@ const authorize = require("../middleware/auth");
 const Project = require("../models/project");
 const { createProject, getLast4Projects, getProjectById, updateProject, deleteProject } = require('../services/project');
 const { getUserById } = require('../services/user');
-const { createProjectValidator, validate } = require('../services/validation');
+const { createProjectValidator, validate } = require('../validator/index');
 
 
 //Returns the latest 4 projects to our frontend
@@ -39,7 +39,7 @@ router.post('/projects/submit', authorize, createProjectValidator(), validate, a
     const user = await getUserById(userId);
     console.log("The user and the user object", user);
 
-    const createdBy = user._id;
+    const createdBy = user[1]._id;
 
     //Convert authors and tags properties from the request body to an array and filter any whitespace
     authors = authors.split(",").filter((author) => author !== "")
@@ -61,39 +61,49 @@ router.post('/projects/submit', authorize, createProjectValidator(), validate, a
 })
 
 router.put('/editProject/:id', authorize, createProjectValidator(), validate, async (req, res) => {
-    console.log('req.body', req.body);
+    try {
+        console.log('req.body', req.body);
     const { id } = req.params;
     const userId = req.user.user_id;
 
     const project = await getProjectById(id);
-    let createdById = project[1].createdBy._id;
+    if(project[0] !== false) {
+        let createdById = project[1].createdBy._id;
 
-    createdById = createdById.toString();   
+        createdById = createdById.toString();   
+    
+        console.log("Is Logged in user the project owner? (True/False) :", createdById === userId )
+        // A Logged in user that didn't create the project can not edit it
+        if( createdById !== userId) {
+            return res.status(400).json({errors: ["Unauthorized access! Can't edit project because you are not the Project owner"]})
+        }
+    
+        console.log("Project from edit project", project);
+        let { name, abstract, authors, tags } = req.body;
+    
+        //Convert authors and tags properties from the request body to an array and filter any whitespace
+        authors = authors.split(",").filter((author) => author !== "")
+        tags = tags.split("#").filter((tag) => tag !== "");
+        //Trim off any white space for authors and tags before saving in the database
+        authors = authors.map((element) => element.trim());
+        tags = tags.map((element) => element.trim());
+        //To add a #symbol to the first element in our tag arrays
+        tags[0] = `#${tags[0]}`;
+    
+        let fields = { name, abstract, authors, tags} ;
+    
+        let check = await updateProject(id, fields);
+        if(check[0] !== false) {
+            console.log("Updated Project ", check);
+            res.status(201).json({message:"Project updated successfully", status: "Update OK",  project:check[1], data:check[1]})
+        } 
+    } else {
+        return res.status(422).json({error: project[1], status: "error"})
 
-    console.log("Is Logged in user the project owner? (True/False) :", createdById === userId )
-    // A Logged in user that didn't create the project can not edit it
-    if( createdById !== userId) {
-        return res.status(400).json({errors: ["Unauthorized access! Can't edit project because you are not the Project owner"]})
     }
 
-    console.log("Project from edit project", project);
-    let { name, abstract, authors, tags } = req.body;
-
-    //Convert authors and tags properties from the request body to an array and filter any whitespace
-    authors = authors.split(",").filter((author) => author !== "")
-    tags = tags.split("#").filter((tag) => tag !== "");
-    //Trim off any white space for authors and tags before saving in the database
-    authors = authors.map((element) => element.trim());
-    tags = tags.map((element) => element.trim());
-    //To add a #symbol to the first element in our tag arrays
-    tags[0] = `#${tags[0]}`;
-
-    let fields = { name, abstract, authors, tags} ;
-
-    let check = await updateProject(id, fields);
-    if(check) {
-        console.log("Updated Project ", check);
-        res.json({message:"Project updated successfully", status: "Update OK",  project:check})
+    } catch (error) {
+        return res.status(400).json({error: error, status: "error"})
     }
 
 })
@@ -104,7 +114,7 @@ router.delete('/deleteProject/:id', authorize, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.user_id;
     const project = await getProjectById(id);
-    let createdById = project.createdBy._id;
+    let createdById = project[1].createdBy._id;
    
     createdById = createdById.toString()    //To match it with userId
     // A Logged in user that didn't create the project can not edit it
@@ -116,11 +126,12 @@ router.delete('/deleteProject/:id', authorize, async (req, res) => {
 
    console.log('Deleted Project ', deletedProject);
 
-   if(deletedProject) {
+   if(deletedProject[0] !== false) {
        return res.status(200).json({message: "Project deleted successfully", status: "Deletion OK"})
-   }
+   } else {
+        return res.status(422).json({error: deletedProject[1], status: "error"})
 
-//    return res.status(200).json({message: "Project deleted successfully", status: "Deletion OK"})
+   }
 
 })
 

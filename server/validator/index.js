@@ -1,7 +1,7 @@
 //ERROR HANDLING
 const { check, body, validationResult } = require("express-validator");
 const User = require("../models/user");
-const { getUserById, authenticate, FindUserByEmail } = require("./user");
+const { getUserById, authenticate, FindUserByEmail } = require("../services/user");
 const {getGradYears, getPrograms} = require("../services/school");
 
 
@@ -82,6 +82,7 @@ const updateProfileValidator = () => {
     //Check that email isn't taken
     check("email").custom(async(value, {req}) => {
       const { id } = req.params;
+      console.log("Email -- ", value);
       let userExist = await FindUserByEmail(value);
       console.log("Exists? ", userExist)
       if(userExist[1]._id == id) {
