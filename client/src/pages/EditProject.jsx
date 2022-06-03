@@ -5,12 +5,16 @@ import AuthService from "../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 //Import reducer function to be used my useReducer hook
 import { reducer } from "../reducers/editProject";
+import Loader from "../components/Loader";
 
 
 const EditProject = () => {
   //Invoking Params and Navigate method from react-router-dom
   let navigate = useNavigate();
   const params = useParams();
+
+  //Is Loading state for Loader component
+  const [isLoading, setIsLoading] = useState(false)
 
   // const { getCurrentUser, isUserProjectOwner } = AuthService;
 
@@ -22,7 +26,8 @@ const EditProject = () => {
     tags: [],
     createdBy: '',
     profilePicture: '',
-    error: []
+    error: [],
+    successMessage: false
   }
   const [createdAt, setCreatedAt ] = useState('');
   const [updatedAt, setUpdatedAt ] = useState('');
@@ -74,7 +79,7 @@ const EditProject = () => {
 
   //Invoking the useReducer hook and extracting input elements from our state
   const [state, dispatch] = useReducer(reducer, initialState);
-  let { name, abstract, authors, tags, createdBy, profilePicture, error } = state;  
+  let { name, abstract, authors, tags, createdBy, profilePicture, error, successMessage } = state;  
 
   const handleInputChange = (evt) => {
     const { name, value } = evt.target;
@@ -96,6 +101,8 @@ const EditProject = () => {
   //Handle Update function
   const handleUpdateSubmit = (evt) => {
     evt.preventDefault();
+    // Load Loader component
+    setIsLoading(true);
     console.log("Submitted")
 
     let formData = { name, abstract, authors, tags }
@@ -109,8 +116,27 @@ const EditProject = () => {
       const data = await res.json();
       console.log("The data from the edit is: ", data)
       console.log("UPDATE SUCCESS");
-      if(data.errors) {
+      if(data.errors || data.error) {
         dispatch({type: 'error', payload:data.errors})
+        setIsLoading(false)   //Remove loader component after message has been displayed
+        // To scroll to the top (on smaller screens) after load is complete
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        })
+      } else {
+        dispatch({type: 'success'})
+        setIsLoading(false)   //Remove the loader component after message is shown
+        window.scrollTo({     //To scroll to the top (on smaller screens) after load is complete
+          top:0,
+          behavior: "smooth"
+        })
+        // To clear the success message shown after 5seconds
+        setTimeout(() => {
+          dispatch({ type: 'clearSuccessAlert'})
+        }, 5000)
+       
+
       }
     })
     
@@ -118,8 +144,10 @@ const EditProject = () => {
 
   const handleDeleteProject = (evt) => {
     evt.preventDefault();
+    // Load Loader component
+    setIsLoading(true);
     console.log("Deleted")
-
+    
     fetch(`/api/deleteProject/${projectId}`, {
       method: "DELETE",
       headers: {
@@ -131,6 +159,11 @@ const EditProject = () => {
       if(data.errors) {
         setShow(false);
         dispatch({type: 'error', payload:data.errors})
+        setIsLoading(false)   //Remove the loader component after message is shown
+        window.scrollTo({     //To scroll to the top (on smaller screens) after load is complete
+          top:0,
+          behavior: "smooth"
+        })
       } else {
         // window.location = "/"
         navigate('/', {replace: true} )
@@ -199,6 +232,15 @@ const EditProject = () => {
                 <h3>Edit Project</h3>
                 <hr />
 
+              {/* Success Flash Message */}
+              {successMessage? 
+                <Alert variant="info">
+                  <strong> Project updated successfully! </strong>  
+                </Alert>
+  
+                : null
+              }
+
               {/* Show error */}
               {error.length > 0 ? 
                 <Alert variant="danger" onClick={(evt) => dispatch({type: 'clearErrorAlert'})} style={{cursor: "pointer", fontWeight: "700"}} >
@@ -229,9 +271,13 @@ const EditProject = () => {
                       <Form.Control type="text" name="tags" value={tags} placeholder="Use # to tag project with different topics (e.g. #javascript)" onChange={handleInputChange} />
                   </Form.Group>
 
-                  <Button variant="primary" type="submit" className="mt-1">
+                  <Button variant="primary" type="submit" className="mt-2">
                       Update
                   </Button>
+
+                  {/* Loader Component */}
+                  {isLoading ? <Loader size={"80px"} /> : "" }
+
                 </Form>
 
             </div>
@@ -250,7 +296,10 @@ const EditProject = () => {
                     </Modal.Header>
                     <Modal.Body> 
                         <h3>Are you sure you want to delete this project?</h3>
-                        <p>You can't undo this action once done</p>
+                        <p>This will delete every comment, reply and notifications associated with it. 
+                          <br/> 
+                          <strong>You can't undo this action once done</strong>
+                        </p>
                       </Modal.Body>
                     <Modal.Footer>
                       <Button variant="secondary" onClick={handleClose}>

@@ -117,7 +117,7 @@ const updatePasswordValidator = () => {
 
       const { id } = req.params;
       const user = await getUserById(id);
-      const { email } = user;
+      const { email } = user[1];
       
       let check = await authenticate(email, value);
       console.log("Check ", check)

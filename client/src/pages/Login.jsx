@@ -1,11 +1,12 @@
-import React, {useContext, useReducer} from "react";
+import React, {useContext, useReducer, useState} from "react";
 import Layout from "./shared/Layout";
 import {Form, Button, Container, Alert} from "react-bootstrap";
-import { Facebook } from "react-bootstrap-icons"; 
+// import { Facebook } from "react-bootstrap-icons"; 
 import { useNavigate, generatePath } from 'react-router-dom';
 import { UserContext } from "../context/ReferenceDataContext";
 import AuthService from "../services/auth";
 import { GoogleLogin } from "@react-oauth/google";
+import Loader from "../components/Loader";
 // import FacebookLogin from 'react-facebook-login';
 
 const {setWithExpiry } = AuthService
@@ -14,6 +15,9 @@ const Login = () => {
 
   //Initialize useNavigate
   let navigate = useNavigate();
+
+  //Is Loading state for Loader component
+  const [isLoading, setIsLoading] = useState(false)
 
   const initialState = {
     error: '',
@@ -65,6 +69,7 @@ const Login = () => {
   
   const handleSubmit = (evt) => {
     evt.preventDefault();
+    setIsLoading(true)
 
     fetch('/api/login', {
       method: "POST",
@@ -94,6 +99,7 @@ const Login = () => {
       else {
         console.log(data.error);
         dispatch({ type: 'error', payload: data.error})
+        setIsLoading(false)
 
 
       }
@@ -176,8 +182,11 @@ const Login = () => {
   return (
     <Layout>
         <Container fluid="md">
+
           <main className="mx-auto border rounded p-5 mt-5" style={{width:"90%"}}>
+                        
             <Form onSubmit={handleSubmit}>
+
               <h1>LOGIN</h1>
 
               {/* Login error */}
@@ -210,22 +219,29 @@ const Login = () => {
                 />
               </Form.Group>
 
+
               <Button variant="primary" type="submit" className="mt-2">
                 Login
               </Button>
+
+
               <span className="mx-2">
+
                 <a className="forgotPassword" href="/forgotPassword" style={{fontWeight:"500"}}>
                   Forgot Password?
                 </a>
+
+              {isLoading ? <Loader size={"70px"} /> :  ""}
+
               </span>
             </Form>
 
             <div className="socialLogin mt-2 ">
               {/* <Form> */}
-                <Button variant="primary" type="submit">
+                {/* <Button variant="primary" type="submit">
                   <span> <Facebook size={22} /> </span>
                   <a href="#/auth/facebook" style={{color:"white", textDecoration: "none"}} > Login with Facebook  </a>
-                </Button>
+                </Button> */}
               {/* </Form> */}
 
               {/* <FacebookLogin
@@ -236,20 +252,22 @@ const Login = () => {
               >
               </FacebookLogin> */}
 
+              <GoogleLogin
+                  onSuccess={(credentialResponse) => {   
+                    console.log("Response -- ", credentialResponse)     
+                    handleGoogleClick(credentialResponse);
+                  }}
+                  onError={() => {
+                    console.log("Login Failed");
+                    alert("Failed to sign up with Google. Something went wrong")
+                  }}
+              
+                />
+
+
             </div>
               
-            <GoogleLogin
-              onSuccess={(credentialResponse) => {   
-                console.log("Response -- ", credentialResponse)     
-                handleGoogleClick(credentialResponse);
-              }}
-              onError={() => {
-                console.log("Login Failed");
-                alert("Failed to sign up with Google. Something went wrong")
-              }}
-          
-            />
-
+      
           </main>
         </Container>
     </Layout>

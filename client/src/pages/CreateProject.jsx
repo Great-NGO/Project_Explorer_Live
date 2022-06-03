@@ -1,12 +1,16 @@
-import React, {useReducer, useEffect} from "react";
+import React, {useReducer, useEffect, useState} from "react";
 import Layout from "./shared/Layout";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import AuthService from '../services/auth';
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const CreateProject = () => {
 
   let navigate = useNavigate();
+
+    //Is Loading state for Loader component
+    const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const { getCurrentUser } = AuthService;
@@ -95,6 +99,8 @@ const CreateProject = () => {
   //On submit event handler
   const handleSubmit = (evt) => {
     evt.preventDefault();
+    // Load Loader component
+    setIsLoading(true);
 
     console.log('The authors', authors)
     
@@ -123,15 +129,21 @@ const CreateProject = () => {
           else {
             console.log(data.errors);
             dispatch({ type: 'error', payload: data.errors})
+            setIsLoading(false)   //Remove loader component after message has been displayed
+            // To scroll to the top (on smaller screens) after load is complete
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            })
           }
         })
 
   }
 
   const handleFileChange = (evt) => {
-    const {name, value, files} = evt.target;
+    const {value} = evt.target;
     console.log("Event", evt + "Value", value);
-
+    
     // dispatch({type: 'profilePicture', fieldName:name, payload:files[0]})
   }
   
@@ -199,11 +211,15 @@ const CreateProject = () => {
                 <Form.Label>Upload Project File</Form.Label>
                 <Form.Control type="file" name="projectFile" accept=".doc,.docx, application/msword, .pdf" onChange={handleFileChange}/>
               </Form.Group>
-            </div>
+            </div>    
 
             <Button variant="primary" type="submit">
               Submit
             </Button>
+
+            {/* Loader Component */}
+            {isLoading ? <Loader size={"100px"} /> : "" }
+
           </Form>
         </Container>
     </Layout>

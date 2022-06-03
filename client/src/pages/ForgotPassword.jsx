@@ -2,6 +2,7 @@ import React, { useReducer, useState } from "react";
 import Layout from "./shared/Layout";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { reducer } from "../reducers/forgotPassword";
+import Loader from "../components/Loader";
 // import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
@@ -15,11 +16,15 @@ const ForgotPassword = () => {
   }
   const [onSubmitMsg, setOnSubmitMsg] = useState('')
 
+  //Is Loading state for Loader component
+  const [isLoading, setIsLoading] = useState(false)
+
   const [state, dispatch] = useReducer(reducer, initialState);
   const { email, successMsg, error } = state;
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
+    setIsLoading(true)
 
     fetch('/api/forgotPassword', {
       method: "POST",
@@ -33,9 +38,12 @@ const ForgotPassword = () => {
 
       if (data.error) {
         dispatch({type: 'error', payload:data.error})
+        setOnSubmitMsg('');   //To remove success message present
+        setIsLoading(false)
+
       } else {
         setOnSubmitMsg(data.message)
-
+        setIsLoading(false)
         // setTimeout(() => {
         //   navigate('/login', true)
         // }, 2000);
@@ -66,7 +74,7 @@ const ForgotPassword = () => {
               : null}
               
               {error ?              
-                  <Alert variant="danger" key={error} onClick={() => dispatch({type:'clearAlert'})}> 
+                  <Alert variant="danger" key={error} style={{cursor: "pointer", fontWeight: "700"}} onClick={() => dispatch({type:'clearAlert'})}> 
                       {error}
                   </Alert>
                 : null
@@ -97,6 +105,9 @@ const ForgotPassword = () => {
               <span className="mx-2">
                 <a className="login" href='/login' style={{fontWeight:"500"}}>Login</a>
               </span>
+
+              {isLoading ? <Loader size={"100px"} /> : "" }
+
             </Form>
           </main>
         </Container>

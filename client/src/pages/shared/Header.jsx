@@ -92,7 +92,7 @@ const Header = () => {
               <span style={usernameStyle}>
                 <a href={`/editProfile/${userId}`} style={{textDecoration: 'none', color: '#B5B5B5'}}> 
                   {usernameText} 
-                  <img src={profilePicture.includes('http')? profilePicture : `/${profilePicture}` } alt="Profile" className="card-img-top" style={profPicStyle} />
+                  <img src={profilePicture} alt="Profile" className="card-img-top" style={profPicStyle} />
                 </a>
               </span>
               <Nav.Link onClick={clickLogout} style={{marginRight: '10px'}}>

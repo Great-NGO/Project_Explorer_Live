@@ -2,19 +2,23 @@ import React,{ useState, useReducer, useContext} from "react";
 import useFetch from "../services/useFetch";
 import Layout from "./shared/Layout";
 import { Form, Col, Button, Container, Row, Alert } from "react-bootstrap";
-import { Facebook} from "react-bootstrap-icons";
+// import { Facebook} from "react-bootstrap-icons";
 // import axios from 'axios';
 import { useNavigate, generatePath } from 'react-router-dom';
 // Import our Google Button component which handles Signup/Login with Google
 import { GoogleLogin } from "@react-oauth/google";
 import { UserContext } from "../context/ReferenceDataContext";
 import AuthService from "../services/auth";
+import Loader from "../components/Loader";
 const { setWithExpiry } = AuthService;
 
 const Signup = () => {
 
   //Initialize useNavigate
-  let navigate = useNavigate()
+  let navigate = useNavigate();
+
+   //Is Loading state for Loader component
+   const [isLoading, setIsLoading] = useState(false)
 
   //We use custom hook - useFetch to populate data for programData and graduationYears
   const programData = useFetch('/api/programs');
@@ -28,7 +32,6 @@ const Signup = () => {
 
   //Reducer for signup
   const initialState = {
-    isLoading: false,
     error: [],
     firstname: '',
     lastname: '',
@@ -50,7 +53,6 @@ const Signup = () => {
       case 'success': {
         return {
           ...state,
-          isLoading: false,
           loginLinkOpen: true,
           error: []
         };
@@ -80,6 +82,8 @@ const Signup = () => {
   //On Submit event handler
   const handleSubmit = (evt) => {
     evt.preventDefault();
+    // Load Loader component
+    setIsLoading(true)
 
     fetch('/api/signup',  {
       method: "POST",
@@ -97,11 +101,23 @@ const Signup = () => {
         if(data.status === "Signup OK") {
           console.log("Signup Successful");
           dispatch({ type: 'success'})
+          setIsLoading(false)   //Remove loader component after message has been displayed
+          // To scroll to the top (on smaller screens) after load is complete
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          })
         }
         else {
           console.log(data.errors)
           dispatch({ type: 'error', payload: data.errors})
           console.log("The errors", state.error)
+          setIsLoading(false)   //Remove loader component after message has been displayed
+          // To scroll to the top (on smaller screens) after load is complete
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          })
         }
       })
 
@@ -164,6 +180,7 @@ const Signup = () => {
   return (
     <Layout>
       <Container fluid="md">
+
         <main className="mx-auto mt-5 p-5 border" style={{width:"90%"}}>
           <Form onSubmit={handleSubmit}>
 
@@ -281,39 +298,43 @@ const Signup = () => {
                       ))}
                 </Form.Control>
               </Form.Group>
-            </Row>
-
+            </Row>          
+            
             <Button variant="primary" type="submit" className="mt-2">
               Submit
             </Button>
+
+            {isLoading ? <Loader size={"100px"} /> : "" }
+
           </Form>
 
-          <div className="socialLogin mt-3">
+          <div className="socialLogin mt-2">
             {/* <Form> */}
-            <Button variant="primary" type="submit">
+            {/* <Button variant="primary" type="submit">
               <span> <Facebook size={22} /> </span>
               <a href="#/auth/facebook" style={{ color: "white", textDecoration: "none" }} >
                 Signup with Facebook
               </a>
-            </Button>
+            </Button> */}
             {/* </Form> */}
+
+              <GoogleLogin
+              onSuccess={(credentialResponse) => {   
+                console.log("Response -- ", credentialResponse)     
+                handleGoogleClick(credentialResponse);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+                alert("Failed to sign up with Google. Something went wrong")
+              }}
+              text="signup_with"
+            />
 
             
           </div>
 
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {   
-              console.log("Response -- ", credentialResponse)     
-              handleGoogleClick(credentialResponse);
-            }}
-            onError={() => {
-              console.log("Login Failed");
-              alert("Failed to sign up with Google. Something went wrong")
-            }}
-            text="signup_with"
-          />
+        </main>        
 
-        </main>
       </Container>
     </Layout>
   );

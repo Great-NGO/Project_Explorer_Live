@@ -128,7 +128,7 @@ const sortDescending = (evt) => {
             <Navbar collapseOnSelect expand="md" style={{backgroundColor: "lightgray"}}>
               <Container>
               <Navbar.Brand>
-                <img src={profilePicture.includes('http')? profilePicture : `/${profilePicture}` } alt="" className="defaultProfilePic" style={{ borderRadius: '50%', width: '65px', height: '65px', }} />
+                <img src={profilePicture} alt="" className="defaultProfilePic" style={{ borderRadius: '50%', width: '65px', height: '65px', }} />
               </Navbar.Brand>
 
               <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -198,7 +198,7 @@ const sortDescending = (evt) => {
                       <div className="card-block" id="project_authors">
                         {projAuthors&&projAuthors.map((authors, index) => (
                             <>
-                            <p className='card-text' key={index}>{authors} </p> 
+                            <p className='card-text mx-3' key={index}>{authors} </p> 
                             <hr></hr>
                           </>
                         ))}
@@ -213,6 +213,16 @@ const sortDescending = (evt) => {
                       
                             );
                           })}
+                        </div>
+
+                        <div className="card mt-3">
+                          <div className="card-header">
+                            <strong>Project files</strong>
+                          </div>
+
+                          <div className="card-block" id="vpCardBlock">
+                            <p className="card-text m-2">No file uploaded yet</p>
+                          </div>
                         </div>
                       </div>
                   </Modal.Body>

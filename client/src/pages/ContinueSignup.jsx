@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import Layout from "./shared/Layout";
 import { Form, Col, Button, Container, Alert, Row } from "react-bootstrap";
 import useFetch from "../services/useFetch";
@@ -6,12 +6,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import AuthService from "../services/auth";
 import { reducer } from "../reducers/continueSignup";
 import axios from "axios";
+import Loader from "../components/Loader";
 const { setWithExpiry } = AuthService;
 
 const ContinueSignup = () => {
   
     const params = useParams();
     let navigate = useNavigate();
+
+   //Is Loading state for Loader component
+   const [isLoading, setIsLoading] = useState(false)
 
     let initialState = {
         password: '',
@@ -53,6 +57,7 @@ useEffect(() => {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+    setIsLoading(true)
 
     let formData = { password, matricNumber, program, graduationYear };
     try {
@@ -70,6 +75,7 @@ useEffect(() => {
       console.log("THE ERR ", error + "THE ERR response ", error.response)
       let { errors } = error.response.data;
       dispatch({type: 'error', payload:errors})
+      setIsLoading(false);
     }
   }
 
@@ -92,7 +98,7 @@ useEffect(() => {
                         : null
                   }
 
-              <Form.Group as={Col} controlId="formGridPassword">
+              <Form.Group as={Col} controlId="formGridPassword" sm={6}>
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     type="password"
@@ -103,7 +109,7 @@ useEffect(() => {
                   />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId="formGridProgram">
+                <Form.Group as={Col} controlId="formGridProgram" sm={6}>
                   <Form.Label>Program</Form.Label>
                   <Form.Control
                     as="select"
@@ -123,7 +129,7 @@ useEffect(() => {
                 </Row>
                 
                 <Row>
-                <Form.Group as={Col} controlId="formGridMatricNo">
+                <Form.Group as={Col} controlId="formGridMatricNo" sm={6}>
                   <Form.Label>Matriculation Number</Form.Label>
                   <Form.Control
                     placeholder="e.g 16/2020"
@@ -133,7 +139,7 @@ useEffect(() => {
                   />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId="formGridGradYear">
+                <Form.Group as={Col} controlId="formGridGradYear" sm={6}>
                   <Form.Label>Graduation Year</Form.Label>
                   <Form.Control
                     as="select"
@@ -154,6 +160,9 @@ useEffect(() => {
               <Button variant="primary" type="submit" className="mt-1">
                 Submit
               </Button>
+
+              {isLoading ? <Loader size={"100px"} /> : "" }
+              
 
             </Form>
           </main>

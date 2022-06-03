@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useContext } from "react";
+import React, { useReducer, useEffect, useContext, useState } from "react";
 import Layout from "./shared/Layout";
 import { Button, Container, Form, Navbar, Alert } from "react-bootstrap";
 import AuthService from "../services/auth";
@@ -8,11 +8,15 @@ import { reducer } from "../reducers/editProfile";
 import axios from 'axios';
 import { UserContext } from "../context/ReferenceDataContext";
 import useFetch from "../services/useFetch";
+import Loader from "../components/Loader";
 
 
 const EditProfile = () => {
   //Invoking Params and Navigate method from react-router-dom
   const params = useParams();
+
+  //Is Loading state for Loader component
+  const [isLoading, setIsLoading] = useState(false)
 
   //Initial states (useReducer hook to handle Change and show initial values)
   let initialState = {
@@ -80,6 +84,7 @@ const handleInputChange = (evt) => {
   //Handle Update Profile function
   const handleUpdateUserProfile = async (evt) => {
     evt.preventDefault();
+    setIsLoading(true)    //Load Loader component
 
     let formData = new FormData();
     formData.append("firstname", firstname);
@@ -100,9 +105,13 @@ const handleInputChange = (evt) => {
 
       setProfilePicture(updatedUser.profilePicture);
       setWithExpiry("user", updatedUser)
-      // localStorage.setItem("user", JSON.stringify(updatedUser));
 
       dispatch({type: 'success'})
+      setIsLoading(false)   //Remove the loader component after message is shown
+      window.scrollTo({     //To scroll to the top (on smaller screens) after load is complete
+        top:0,
+        behavior: "smooth"
+      })
 
 
     } catch (error) {
@@ -110,13 +119,19 @@ const handleInputChange = (evt) => {
       console.log("THE ERR ", error + "THE ERR response ", error.response)
       let { errors } = error.response.data;
       dispatch({type: 'error', payload:errors})
-
+      setIsLoading(false)   //Remove the loader component after message is shown
+      window.scrollTo({     //To scroll to the top (on smaller screens) after load is complete
+        top:0,
+        behavior: "smooth"
+      })
     }
     
   }
 
   const removeProfilePicture = async (evt) => {
     evt.preventDefault();
+    // Load Loader component
+    setIsLoading(true);
     console.log('Remove profPic was clicked');
 
     try {
@@ -125,12 +140,21 @@ const handleInputChange = (evt) => {
       console.log("The user ", user)
       setProfilePicture(user.profilePicture)
       setWithExpiry("user", user )
-
+      setIsLoading(false);  
+      window.scrollTo({     //To scroll to the top (on smaller screens) after load is complete
+        top:0,
+        behavior: "smooth"
+      })
     }
     catch (err) {
       console.log("Error response ", err.response);
       let { errors } = err.response.data;
       dispatch({type: 'error', payload: errors})
+      setIsLoading(false);
+      window.scrollTo({     //To scroll to the top (on smaller screens) after load is complete
+        top:0,
+        behavior: "smooth"
+      })
     }
 
   }
@@ -138,6 +162,7 @@ const handleInputChange = (evt) => {
   //Handle Update Password function
   const handleUpdatePassword =async  (evt) => {
     evt.preventDefault();
+    setIsLoading(true);
     console.log("handle Update User password")
 
     let formData = { currentPassword, newPassword, confirmNewPassword }
@@ -146,12 +171,13 @@ const handleInputChange = (evt) => {
       const res = await axios.put(`/api/editProfile/password/${userId}`, formData, { headers: { "Content-Type": "application/json" }})
       console.log("REs ", res)
       dispatch({type: 'passwordSuccess'})
-      
+      setIsLoading(false)
 
     } catch (error) {
       console.log("ERRR", error.response)
       let {errors} = error.response.data;
       dispatch({type: 'passwordError', payload:errors})
+      setIsLoading(false)
     }
     
   }
@@ -338,6 +364,9 @@ const handleShow = (evt) => {
                 </div>
 
               </div>
+
+              {/* Loader Component */}
+              {isLoading? <Loader size={"90px"} /> : "" }
 
               <div className="row my-3">
                 <div className="col-md-12">

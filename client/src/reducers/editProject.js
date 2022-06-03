@@ -35,6 +35,19 @@ export const reducer = (state, action ) => {
           tags: action.payload
         }
       }
+      case 'success': {
+        return {
+          ...state,
+          successMessage: true,
+          error: []
+        }
+      }
+      case 'clearSuccessAlert' : {
+        return {
+          ...state,
+          successMessage: false,
+        }
+      }
       case 'clearErrorAlert': {
         return {
           ...state,

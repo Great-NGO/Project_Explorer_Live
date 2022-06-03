@@ -54,7 +54,8 @@ export const reducer = (state, action ) => {
       case 'error' : {
         return {
           ...state,
-          error: action.payload
+          error: action.payload,
+          successMessage: false
         }
       }
       case 'passwordError' : {

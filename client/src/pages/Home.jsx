@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import { Row, Container, Col, Card } from "react-bootstrap";
 import Layout from "./shared/Layout";
 import AuthService from '../services/auth';
+import Loader from "../components/Loader";
 
 
 const Jumbotron = () => {
@@ -37,6 +38,7 @@ const Jumbotron = () => {
 const Home = () => {
   
   const [projects, setProjects] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
 
@@ -46,6 +48,7 @@ const Home = () => {
         const data = res.projects
         console.log('The projects ', data);
         setProjects(data);
+        setIsLoading(false);
       })
 
   }, [])
@@ -60,6 +63,8 @@ const Home = () => {
           
           <Container fluid="md">
         
+          {isLoading ? <Loader/> : 
+
             <Row xs={1} lg={4} md={2} sm={2} className="g-4 showcase mt-2">
               {projects&&projects.map((project) => (
 
@@ -78,6 +83,8 @@ const Home = () => {
                 </Col>
                 ))}
             </Row>
+            
+          }
           </Container>
           
         </>

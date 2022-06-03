@@ -1,13 +1,17 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import Layout from "./shared/Layout";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { reducer } from "../reducers/resetPassword";
+import Loader from "../components/Loader";
 
 const ResetPassword = () => {
   const params = useParams();
   let navigate = useNavigate()
+
+  //Is Loading state for Loader component
+  const [isLoading, setIsLoading] = useState(false)
 
   let userId = params.id;
 
@@ -32,16 +36,19 @@ const ResetPassword = () => {
 
   const handleResetPassword = async (evt) => {
       evt.preventDefault();
+      setIsLoading(true);
       let config = {"Content-Type": "application/json"};
       try {
           const res = await axios.put(`/api/resetPassword/${userId}`, { newPassword, confirmNewPassword}, {headers: config})
           console.log("REs ", res);
           dispatch({type: 'success'});
+          setIsLoading(false);
       }
       catch(error) {
           console.log("Error ", error);
           let { errors } = error.response.data;
           dispatch({ type: 'error', payload: errors})
+          setIsLoading(false);
       }
 
   }
@@ -99,6 +106,10 @@ const ResetPassword = () => {
               <Button variant="primary" type="submit" className="mt-2">
                 Submit
               </Button>
+
+              {isLoading ? <Loader size={"100px"} /> : "" }
+              
+              
             </Form>
           </main>
         </Container>
