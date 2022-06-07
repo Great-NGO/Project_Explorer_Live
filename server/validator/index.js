@@ -32,9 +32,10 @@ const userSignupValidator = () => {
     body("password")
       .isLength({ min: 8 })
       .withMessage("Password must be atleast 8 characters long")
-    //   .matches(/\d/)
-      .matches(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
-      .withMessage("Password must be a combination of at least one upper and lower case letter, one symbol and one number (e.g. PaS$@WO123D)."),
+      // .matches(/^(?=.*\d)(?=.*[,.!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
+      // .withMessage("Password must be a combination of at least one upper and lower case letter, one symbol and one number (e.g. PaS$@WO123D)."),
+      .isStrongPassword({ minLength:8, minLowercase:1, minUppercase:1, minNumbers:1, minSymbols:1})
+      .withMessage("Password must be strong - a combination of at least one upper and lower case letter, one symbol and one number (e.g. PaS$@WO123D)."),
     body("matricNumber", "Matric Number is required").trim().notEmpty(),
   ];
 };
@@ -145,7 +146,7 @@ const updatePasswordValidator = () => {
     })
     .withMessage("Passwords must match!!"),
     check("confirmNewPassword")
-    .isStrongPassword({ minLength:8, minLowercase:1, minUppercase:1, minNumbers:1})
+    .isStrongPassword({ minLength:8, minLowercase:1, minUppercase:1, minNumbers:1, minSymbols:1})
     .withMessage("New Password must be strong - a combination of at least one upper and lower case letter, one symbol and one number (e.g. PaS$@WO123D)."),
   ]
 }

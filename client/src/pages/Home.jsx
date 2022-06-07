@@ -21,10 +21,10 @@ const Jumbotron = () => {
         {/* To conditionally show the signup and logged in button based on if there is a user */}
         {getCurrentUser() === null ?
           <div>
-            <a className="me-2 btn btn-primary btn-md getStartedBtn" type="button" href="Signup">
+            <a className="me-2 btn btn-primary btn-md" type="button" href="Signup">
               Get Started
             </a>
-            <a className="btn btn-secondary btn-md loginBtn" type="button" href="Login">
+            <a className="btn btn-secondary btn-md" type="button" href="Login">
               Login
             </a>
         </div>
@@ -71,7 +71,7 @@ const Home = () => {
                 <Col key={project._id} className="projCard" >
                   <Card keys={project._id} >
                     <Card.Body keys={project._id}>
-                        <Card.Title > <a href={`/projects/${project._id}`} keys={project.name} >{project.name} </a>  </Card.Title>
+                        <Card.Title > <a href={`/projects/${project._id}`} keys={project.name} style={{textDecoration:"none", color:"#198754"}}>{project.name} </a>  </Card.Title>
           
                         <Card.Link href="#" className="projectLinks">
                           {project.authors.join(",")}

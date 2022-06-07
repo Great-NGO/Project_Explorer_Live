@@ -67,13 +67,13 @@ const Header = () => {
   return (
 
     
-    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="p-2">
       <Container>
         <Navbar.Brand href="/">Project Explorer</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Form className="d-flex">
+            <Form className="d-flex pt-2">
               <FormControl
                 type="search"
                 placeholder="Search"

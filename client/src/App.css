@@ -1,6 +1,5 @@
 /* /Styling All Pages ... NB: All Pages are by default styled with Bootstrap, this is to add extra styling */
 
-
 /* Index Page */
 
 .jumbotron {
@@ -73,10 +72,10 @@
 
 .footerDiv {
   background-color: #dcdcdc;
-  text-align: right;
-  margin: 20px 0 10px;
-  padding: 5px 20px 3px 20px;
-  max-width: px;
+  text-align: center;
+  /* margin: 20px 0 10px; */
+  padding: 6px 0 1px 0;
+
 }
 
 
@@ -232,9 +231,6 @@
 @media screen and (max-width:569px) {
   .navSearchBtn {
       margin-top: 10px;
-  }
-  .loginBtn{
-    margin-top: 8px;
   }
   .headerNav{
     display: grid;
