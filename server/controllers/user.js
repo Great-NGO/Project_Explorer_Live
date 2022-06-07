@@ -34,15 +34,24 @@ router.post('/signup', userSignupValidator(), validate, async(req, res) => {
         console.log(req.body);
         const { firstname, lastname, email, password, program, matricNumber, graduationYear } = req.body;
 
+        console.log("AAAA")
         let user = await createUser({firstname, lastname, email, password, matricNumber, program, graduationYear})
+       
+        console.log("The attempted created user ", user);
 
-        user = user[1];
-        console.log(`The User is ${user}`)
+        if(user[0] !== false) {
+            user = user[1];
+            console.log(`The User is ${user}`)
+            res.status(200).json({ message: "User Signup successful! Please login", status:"Signup OK"});
+        } else {
+            return res.status(400).json({error: user[1], status: "error"})
+        }
 
-        res.status(200).json({ message: "User Signup successful! Please login", status:"Signup OK"});
 
     } catch (error) {
         console.log(error)
+        return res.status(422).json({error: error, status: "error", message: "Something unexpected happened"})
+
     }
 
 })
@@ -82,7 +91,7 @@ router.post('/login', loginValidator, async(req, res) => {
 
         }
         else {
-            return res.status(400).json({error: userExists[1]});
+            return res.status(400).json({error: userExists[1], status: "error"});
         }
 
     } catch (error) {
