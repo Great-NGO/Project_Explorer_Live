@@ -9,10 +9,10 @@ export const reducer = (state, action ) => {
           projAuthors: action.data.authors,
           projTags: action.data.tags,
           createdBy: action.data.createdBy? `${action.data.createdBy.firstname} ${action.data.createdBy.lastname}` : "User doesn't exist anymore",
-          profilePicture: action.data.createdBy? action.data.createdBy.profilePicture : process.env.DefaultProfilePicture,
+          profilePicture: action.data.createdBy? action.data.createdBy.profilePicture : "https://res.cloudinary.com/ngotech-dev/image/upload/main/avatar_yceqqb.png",
           createdAt: new Date(action.data.createdAt).toLocaleDateString('en-GB'),
           updatedAt: new Date(action.data.updatedAt).toLocaleDateString('en-GB'),
-          createdById: action.data.createdBy._id,
+          createdById: action.data.createdBy? action.data.createdBy._id : "null",
         //   error: []
         }
       }
