@@ -212,7 +212,7 @@ const EditProject = () => {
                   </div>
 
                   <div className="col-md-2">
-                      <a className="btn btn-primary" href={`/projects/${projectId}`} id="viewBtn">
+                      <a className="btn btn-success" href={`/projects/${projectId}`} id="viewBtn">
                         View Project 
                       </a>                   
                   </div>
@@ -271,12 +271,12 @@ const EditProject = () => {
                       <Form.Control type="text" name="tags" value={tags} placeholder="Use # to tag project with different topics (e.g. #javascript)" onChange={handleInputChange} />
                   </Form.Group>
 
-                  <Button variant="primary" type="submit" className="mt-2">
+                  <Button variant="success" type="submit" className="mt-2">
                       Update
                   </Button>
 
                   {/* Loader Component */}
-                  {isLoading ? <Loader size={"80px"} /> : "" }
+                  {isLoading ? <Loader size={"70px"} /> : "" }
 
                 </Form>
 

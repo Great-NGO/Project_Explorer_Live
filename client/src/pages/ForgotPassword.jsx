@@ -99,14 +99,14 @@ const ForgotPassword = () => {
                 />
               </Form.Group>
 
-              <Button variant="primary" type="submit" className="mt-2">
+              <Button variant="success" type="submit" className="mt-2">
                 Submit
               </Button>
               <span className="mx-2">
-                <a className="login" href='/login' style={{fontWeight:"500"}}>Login</a>
+                <a className="login" href='/login' style={{fontWeight:"500", color: "#198754", fontSize:"16px"}}>Login</a>
               </span>
 
-              {isLoading ? <Loader size={"100px"} /> : "" }
+              {isLoading ? <Loader size={"70px"} /> : "" }
 
             </Form>
           </main>

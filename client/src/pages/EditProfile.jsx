@@ -342,7 +342,7 @@ const handleShow = (evt) => {
 
                                 <div className="row col-md-12">
                                     <span className="col-md-12">
-                                    <Button variant="primary" type="submit" className="">
+                                    <Button variant="success" type="submit" className="">
                                         Update Profile
                                         </Button>
                                     </span>
@@ -366,7 +366,7 @@ const handleShow = (evt) => {
               </div>
 
               {/* Loader Component */}
-              {isLoading? <Loader size={"90px"} /> : "" }
+              {isLoading? <Loader size={"70px"} /> : "" }
 
               <div className="row my-3">
                 <div className="col-md-12">
@@ -415,7 +415,7 @@ const handleShow = (evt) => {
                             </div>
                         </div>
                         <div className="row mx-5 mt-2">
-                        <Button variant="primary" type="submit" className="mx-3 col-md-2">
+                        <Button variant="success" type="submit" className="mx-3 col-md-2">
                             Change Password
                          </Button>
                         </div>

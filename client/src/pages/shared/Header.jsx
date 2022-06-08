@@ -72,8 +72,8 @@ const Header = () => {
         <Navbar.Brand href="/">Project Explorer</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
-            <Form className="d-flex pt-2">
+          <Nav className="me-auto pt-2">
+            <Form className="d-flex">
               <FormControl
                 type="search"
                 placeholder="Search"
@@ -86,7 +86,7 @@ const Header = () => {
             <Nav.Link href="/projects/submit">Submit</Nav.Link>
           </Nav>
           
-          <Nav>
+          <Nav className="pt-1">
           { getCurrentUser() !== null? (
             <>
               <span style={usernameStyle}>
