@@ -15,7 +15,7 @@ const E404 = () => {
               <span className="text-danger">Oops!</span> Page not found.
             </p>
             <p className="lead">The page you’re looking for doesn’t exist.</p>
-            <a href="/" className="btn btn-primary">
+            <a href="/" className="btn btn-danger">
               Go Back to Home Page
             </a>
           </div>

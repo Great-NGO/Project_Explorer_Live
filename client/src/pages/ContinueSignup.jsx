@@ -157,11 +157,11 @@ useEffect(() => {
                 </Form.Group>
               </Row>
 
-              <Button variant="primary" type="submit" className="mt-1">
+              <Button variant="success" type="submit" className="mt-1">
                 Submit
               </Button>
 
-              {isLoading ? <Loader size={"100px"} /> : "" }
+              {isLoading ? <Loader size={"80px"} /> : "" }
               
 
             </Form>

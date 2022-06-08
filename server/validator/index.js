@@ -1,6 +1,5 @@
 //ERROR HANDLING
 const { check, body, validationResult } = require("express-validator");
-const User = require("../models/user");
 const { getUserById, authenticate, FindUserByEmail } = require("../services/user");
 const {getGradYears, getPrograms} = require("../services/school");
 
@@ -9,8 +8,8 @@ const userSignupValidator = () => {
   return [
     //Check that email isn't taken
     check("email").custom(async(value) => {
-      let userExist = await User.findOne({'email':value})   
-      if(userExist!==null) {
+      let userExist = await FindUserByEmail(value) 
+      if(userExist[0]!==false) {
         console.log("The User already exists");
         //Return a Promise.reject() because the validation works and should throw an error message. Also, custom validators return promises for async functions
        return Promise.reject()

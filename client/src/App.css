@@ -1,10 +1,42 @@
 /* /Styling All Pages ... NB: All Pages are by default styled with Bootstrap, this is to add extra styling */
 
 /* Index Page */
+#root{
+  /* background-color: #b8b2b27d; */
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Background Animation */
+html, body {
+	width: 100%;
+	height:100%;
+  }
+  
+  body {
+	  /* background: linear-gradient(-45deg, #9eacc4,#ee7752, #e73c7e, #23a6d5, #23d5ab); */
+	  /* background: linear-gradient(-45deg, #6a7ea2, #63766d, #726b6b, #414442); */
+    background: linear-gradient(to bottom right, #ffffffcb 0%,whitesmoke 100%);
+	  background-size: 400% 400%;
+	  animation: gradient 15s ease infinite;
+  }
+  
+  @keyframes gradient {
+	  0% {
+		  background-position: 0% 50%;
+	  }
+	  50% {
+		  background-position: 100% 50%;
+	  }
+	  100% {
+		  background-position: 0% 50%;
+	  }
+  }
 
 .jumbotron {
   margin: 15px auto;
   max-width: 1100px;
+  background-color: #ccdfd5;
 }
 
 .showcase {
@@ -12,9 +44,30 @@
   /* display: grid; */
 }
 
-.showcase .projectLinks{
+
+.showcase .projectAuthors{
   text-decoration: none;
   cursor: default;
+  font-weight: 700;
+  color: #198754;
+  font-size: 16px;
+}
+.showcase .projectTags{
+  text-decoration: none;
+  cursor: default;
+  font-weight: small;
+  color: #198754;  
+}
+
+.showcase .projectText{
+  text-decoration: none;
+  margin-bottom: 0px;
+  cursor: default;
+  font-weight: small;
+}
+
+.showcase .projCard .singleCard{
+  background-color: whitesmoke;
 }
 
 @media screen and (max-width:700px) {
@@ -67,13 +120,12 @@
   }
 }
 
-
 /* General footer Div styling */
 
 .footerDiv {
   background-color: #dcdcdc;
   text-align: center;
-  /* margin: 20px 0 10px; */
+  margin: 20px 0 10px 0px;
   padding: 6px 0 1px 0;
 
 }

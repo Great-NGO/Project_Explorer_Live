@@ -220,14 +220,14 @@ const Login = () => {
               </Form.Group>
 
 
-              <Button variant="primary" type="submit" className="mt-2">
+              <Button variant="success" type="submit" className="mt-2">
                 Login
               </Button>
 
 
               <span className="mx-2">
 
-                <a className="forgotPassword" href="/forgotPassword" style={{fontWeight:"500"}}>
+                <a className="forgotPassword" href="/forgotPassword" style={{fontWeight:"500", color:"#198754", fontSize:"16px"}}>
                   Forgot Password?
                 </a>
 

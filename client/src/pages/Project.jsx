@@ -158,7 +158,7 @@ const sortDescending = (evt) => {
 
                   <div className="col-md-2">
                     { isUserProjectOwner(createdById) === true?  
-                      <a className="btn btn-primary" href={`/editProject/${projectId}`} id="editBtn">
+                      <a className="btn btn-success" href={`/editProject/${projectId}`} id="editBtn">
                         Edit Project 
                       </a>
                       : null
@@ -180,7 +180,7 @@ const sortDescending = (evt) => {
                 {/* Would only show first at breakpoint because of flex-md-row-reverse class in the parent element*/}
               <div className="col-md-4 my-2" id="projDetCol" >
 
-                <button type="button" className="btn btn-primary" onClick={handleShow}>
+                <button type="button" className="btn btn-success" onClick={handleShow}>
                   Show Project Details
                 </button>
 
@@ -287,7 +287,7 @@ const sortDescending = (evt) => {
 
                   <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={newContent => {}}/>
 
-                  <Button variant="primary" type="submit" className="mt-2">
+                  <Button variant="success" type="submit" className="mt-2">
                     Submit
                   </Button>
                 </form>

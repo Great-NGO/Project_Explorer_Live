@@ -103,11 +103,11 @@ const ResetPassword = () => {
                 />
               </Form.Group>
 
-              <Button variant="primary" type="submit" className="mt-2">
+              <Button variant="success" type="submit" className="mt-2">
                 Submit
               </Button>
 
-              {isLoading ? <Loader size={"100px"} /> : "" }
+              {isLoading ? <Loader size={"70px"} /> : "" }
               
               
             </Form>

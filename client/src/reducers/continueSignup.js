@@ -4,7 +4,6 @@ export const reducer = (state, action ) => {
       case 'loadContinueSignupDetails': {
         return {
           ...state,
-          matricNumber: action.data.matricNumber,
           program: action.data.program,
           graduationYear: action.data.graduationYear,
           error: [],

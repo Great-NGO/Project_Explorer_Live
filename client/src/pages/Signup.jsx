@@ -109,8 +109,8 @@ const Signup = () => {
           })
         }
         else {
-          console.log(data.errors)
-          dispatch({ type: 'error', payload: data.errors})
+          console.log("Data.errors " +data.errors + " \nData.error",data.error)
+          data.errors ? dispatch({ type: 'error', payload: data.errors}) : dispatch({type: 'error', payload: [data.error]})
           console.log("The errors", state.error)
           setIsLoading(false)   //Remove loader component after message has been displayed
           // To scroll to the top (on smaller screens) after load is complete
@@ -180,7 +180,6 @@ const Signup = () => {
   return (
     <Layout>
       <Container fluid="md">
-
         <main className="mx-auto mt-5 p-5 border" style={{width:"90%"}}>
           <Form onSubmit={handleSubmit}>
 
@@ -300,11 +299,11 @@ const Signup = () => {
               </Form.Group>
             </Row>          
             
-            <Button variant="primary" type="submit" className="mt-2">
+            <Button variant="success" type="submit" className="mt-2">
               Submit
             </Button>
 
-            {isLoading ? <Loader size={"100px"} /> : "" }
+            {isLoading ? <Loader size={"70px"} /> : "" }
 
           </Form>
 

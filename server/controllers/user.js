@@ -47,7 +47,6 @@ router.post('/signup', userSignupValidator(), validate, async(req, res) => {
             return res.status(400).json({error: user[1], status: "error"})
         }
 
-
     } catch (error) {
         console.log(error)
         return res.status(422).json({error: error, status: "error", message: "Something unexpected happened"})
