@@ -21,8 +21,8 @@ const cors = require('cors');
 // Cors configuration
 const corsOptions = {
     origin: [
-      "http://localhost:3000",
-      // "https://ngotechprojectexplorer.herokuapp.com"
+      // "http://localhost:3000",
+      "https://ngotechprojectexplorer.herokuapp.com"
     ],
     credentials: true, //access-control-allow-credentials:true
     optionSuccessStatus: 200,
