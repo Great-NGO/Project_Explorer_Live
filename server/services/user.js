@@ -138,7 +138,7 @@ const getUrl = () => {
 const FindUserByEmail = async (email) => {
   // const user = await User.findOne ({'email':email});
   const user = await User.findOne ({email});
-  if (user) {
+  if (user!==null) {
     return [true, user]
   }
   else {
