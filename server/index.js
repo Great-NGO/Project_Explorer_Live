@@ -57,6 +57,7 @@ app.use('/api', require("./controllers/auth"));
 app.use('/api', require("./controllers/home"));
 app.use('/api', require("./controllers/user"));
 app.use('/api', require("./controllers/project"));
+app.use('/api', require("./controllers/comment"));
 
 // To show public files/Files from uploads folder
 app.use("/api/uploads", express.static('uploads'));      //Would use when i upload to cloudinary

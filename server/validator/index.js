@@ -200,6 +200,25 @@ const continueSignupValidator = () => {
   ]
 }
 
+const createCommentValidator = (req, res, next) => {
+  const { text, projectID } = req.body;
+  if(!(text && projectID)) {
+    return res.status(400).json({error: "Comment can not be empty", actualError: "Text and ProjectID are required to create new comment", status:"error"})
+  } else {
+    next();
+  }
+}
+
+const createReplyValidator = (req, res, next) => {
+  const { text, commentID, projectID, } = req.body;
+  if(!(text && commentID && projectID)) {
+    return res.status(400).json({error: "Reply can not be empty", actualError: "Text, CommentID and ProjectID are required to create a new reply.", status:"error"})
+  } else {
+    next();
+  }
+}
+
+
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -228,5 +247,6 @@ module.exports = {
   forgotPasswordValidator,
   resetPasswordValidator,
   continueSignupValidator,
-
+  createCommentValidator,
+  createReplyValidator
 };

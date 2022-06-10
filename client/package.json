@@ -12,6 +12,7 @@
     "html-react-parser": "^1.4.8",
     "http-proxy-middleware": "^2.0.3",
     "jodit-react": "^1.2.18",
+    "moment": "^2.29.3",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",
     "react-bootstrap-icons": "^1.7.2",
@@ -20,6 +21,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "react-simple-wysiwyg": "^1.0.2",
+    "socket.io-client": "^4.5.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

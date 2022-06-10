@@ -20,7 +20,6 @@ const { translateError } = require("../services/mongo_helper");
 
 const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
-
 console.log("Google client id from node server ", process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
 router.post("/google-login", async (req, res) => {

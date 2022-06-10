@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const {getGradYears, getPrograms} = require("../services/school");
 const router = express.Router();
-const auth = require("../middleware/auth")
 
 router.get('/programs', (req, res) => {
     const programs = getPrograms();
@@ -20,15 +19,6 @@ router.get('/graduationYears', (req, res) => {
     // res.status(200).json({data: gradYears}) // res.status(200).json({gradYears})      
 
 })
-
-router.get('/welcome', auth, (req, res) => {
-    res.status(200).send("WELCOMEEEEE");
-})
-
-router.post('/welcome', auth, (req, res) => {
-    res.status(200).send("WELCOMEEEEE");
-})
-
 
 router.get('/logout', (req, res) => {
     res.clearCookie('authToken');

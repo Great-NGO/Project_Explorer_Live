@@ -21,7 +21,7 @@ const Project = () => {
   const params = useParams();
   
   // Importing the isUserProjectOwner method 
-  const { isUserProjectOwner } = AuthService;
+  const { isUserProjectOwner, getCurrentUser } = AuthService;
 
 
 //Initial states (useReducer hook to handle Change and show initial values)
@@ -266,6 +266,14 @@ const sortDescending = (evt) => {
                       {comments.map((comment) => (<Comment
                         project={project}
                         comment={comment} currentUser={user ? user._id : ''} key={comment._id} />))}
+                    </div>
+
+                  </div> */}
+                  {/* <div className="row">
+                    <div className="comments">
+                      {comments.map((comment) => (
+                        {comment}
+                      ))}
                     </div>
 
                   </div> */}

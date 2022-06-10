@@ -1,18 +1,16 @@
 require('dotenv').config();
-const bcrypt = require('bcryptjs');
 const express = require('express');
-const User = require("../models/user");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const { userSignupValidator, updateProfileValidator, validate, updatePasswordValidator, loginValidator, forgotPasswordValidator, resetPasswordValidator } = require('../validator');
 
 //Auth middleware
-const authorize = require("../middleware/auth");
+const { authorize, checkUser } = require("../middleware/auth");
 const { upload, uploadProfilePicToCloudinary, updateProfilePicture } = require('../services/upload');
 const fs = require('fs');
 const { getUserById, updateUser, authenticate, encryptPassword, updateUserPassword, createUser, FindUserByEmail } = require('../services/user');
 const { sendResetPwdMail } = require('../services/sendMail');
 const formidable = require("formidable");
+const { getUserNotification } = require('../services/notifications');
 
 
 // To get a specific user details
@@ -24,6 +22,18 @@ router.get('/user/:id', async(req, res) => {
         res.json({status: "OK", data:user[1], user:user[1]});
     } else {
         return res.status(400).json({status: "error", error: user[1]})
+    }
+})
+
+// To get a Users notification 
+router.get('/notifications/:userId', checkUser, async(req, res) => {
+    let userId = req.params.userId
+    const userNotification = await getUserNotification(userId);
+    console.log("The USER NOTIFICATION ", userNotification);
+    if(userNotification[0] !== false) {
+        res.status(200).json({userNotification:userNotification[1], status:"OK"});
+    } else {
+        res.status(400).json({error: userNotification[1], status: "error"})
     }
 })
 
@@ -240,8 +250,11 @@ router.put('/editProfile/password/:id', authorize, updatePasswordValidator(), va
    
     const tryUpdate = await updateUserPassword(id, confirmNewPassword)
     console.log("Edit user password  ", tryUpdate)
-
-    res.json({message: "Password updated successfully", status: "Update OK"})
+    if(tryUpdate[0] !== false) {
+        res.json({message: "Password updated successfully", status: "Update OK"})
+    } else {
+        return res.status(400).json({errors: ["OOPs! Something went wrong. Failed to updated password. Please try again later."]})
+    }
 })
 
 router.post('/forgotPassword', forgotPasswordValidator, async( req, res) => {
