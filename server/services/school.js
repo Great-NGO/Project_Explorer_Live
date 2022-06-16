@@ -3,6 +3,7 @@
 const getPrograms = () => {
     return [    
         "Accounting",
+        "Aeronautical Engineering",
         "Agricuture",
         "Agricuture in Agronomy and Landscape design",
         "Agricutural Economics and Extension",
@@ -20,6 +21,7 @@ const getPrograms = () => {
         "Computer technology",
         "Economics",
         "Economics Education",
+        "Engineering",
         "English studies",
         "English language education",
         "Electrical Engineering",
