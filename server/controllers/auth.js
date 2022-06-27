@@ -52,6 +52,12 @@ try {
     if(userExists[0] !== false ) {
         //The User already has an account
         userExists = userExists[1];
+        if(userExists.googleID === null || userExists.googleID == undefined) {
+            await updateUser(userExists._id, {googleID})
+         //    let update = await updateUser(userExists._id, {googleID})
+         //    console.log("Updated user to include  googleid", update)
+         }
+ 
         // Create token
         const token = userExists.token;
         //Save token in a cookie and send back to the frontend

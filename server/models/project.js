@@ -39,6 +39,7 @@ const ProjectSchema = new Schema(
         userId: {
           type: mongoose.ObjectId,
           ref: "user",
+          unique: true
         },
         count: {
           type: Number,

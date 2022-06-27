@@ -1,115 +1,84 @@
 // require('dotenv').config();
 const nodemailer = require("nodemailer");
 const { getUrl } = require("./user");
-const { google } = require('googleapis');
-
+const { google } = require("googleapis");
 
 //Getting parameters from our environment variables and saving them to a new variable
 const nodeMailerEmail = process.env.NODEMAILER_USER_EMAIL;
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-// const REDIRECT_URI = process.env.REDIRECT_URI;
-const REDIRECT_URI = "https://developers.google.com/oauthplayground";
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
+const nodeMailerPassword = process.env.NODEMAILER_USER_PASSWORD;
 
 console.log(nodeMailerEmail);
-console.log(REDIRECT_URI);
-
-//Using the google api package to help with oAuth authentication  and to retrieve access token
-const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
-
-// google.options({ auth: oAuth2Client }); // Apply the settings globally 
+console.log(nodeMailerPassword);
 
 const sendResetPwdMail = async (email, firstname, id) => {
-
-    // try {
-    const accessToken = await oAuth2Client.getAccessToken()
-
-    console.log("pppp");
-    console.log(accessToken);
+  try {
+    let url = `http://localhost:3000/resetPassword/${id}`;
+    let url2 = `"${getUrl()}/resetPassword/${id}`;
+    let url3 = `https://ngotechprojectexplorer.herokuapp.com/resetPassword/${id}`;
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            type: 'OAuth2',
-            user: nodeMailerEmail,
-            clientId: CLIENT_ID,
-            clientSecret: CLIENT_SECRET,
-            refreshToken: REFRESH_TOKEN,
-            accessToken: accessToken,
-       
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-
+      service: "gmail",
+      auth: {
+        user: nodeMailerEmail,
+        pass: nodeMailerPassword,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
 
     let mail = {
-        from: "Great-NGO Project-Explorer ",
-        to: email,
-        subject: "Reset your Project Explorer password",
-        html: `
+      from: "Great-NGO Project-Explorer ",
+      to: email,
+      subject: "Reset your Project Explorer password",
+      html: `
            Hi <strong>${firstname}</strong>,
            <p>Having an issue with remembering your password? Well don't worry! </p>
            <p>Click the link below to complete your password reset process </p>
-           <br> <a href="${getUrl()}/resetPassword/${id}">Click here to reset your password</a>
-        `
+           <br> <a href="${url}">Click here to reset your password</a>
+        `,
+    };
+
+    const result = await transporter.sendMail(mail);
+    console.log("The result from sending ", result);
+
+    if (result.accepted) {
+      return [true, "User Reset Password link sent successfully."];
+    } else {
+      return [
+        false,
+        result.code,
+        "Something went wrong in sending reset password link",
+      ];
     }
-
-    // const result = await transporter.sendMail(mail)
-    transporter.sendMail(mail, function (err, info) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("info.messageId: " + info.messageId);
-            console.log("info.envelope: ", info.envelope);
-            console.log("info.accepted: ", info.accepted);
-            console.log("info.rejected: ", info.rejected);
-            console.log("info.pending: " + info.pending);
-            console.log("info.response: " + info.response);
-
-        }
-        transporter.close();
-    })
-    //     return result;
-
-    // } catch (error) {
-    //     console.log(error)
-    //     return error;
-    // }
-
-}
+  } catch (error) {
+    console.log(error);
+    return [
+      false,
+      error,
+      "Something went wrong in sending reset password link to user.",
+    ];
+  }
+};
 
 const sendWelcomeMail = async (email, firstname) => {
-
-    const accessToken = await oAuth2Client.getAccessToken()
-    console.log(accessToken);
-
+  try {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            type: 'OAuth2',
-            user: nodeMailerEmail,
-            clientId: CLIENT_ID,
-            clientSecret: CLIENT_SECRET,
-            refreshToken: REFRESH_TOKEN,
-            accessToken: accessToken,
-       
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-
+      service: "gmail",
+      auth: {
+        user: nodeMailerEmail,
+        pass: nodeMailerPassword,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
 
     let mail = {
-        from: "Great-NGO Project-Explorer ",
-        to: email,
-        subject: "Welcome to NGO-TECH Project Explorer",
-        html: `
+      from: "Great-NGO Project-Explorer ",
+      to: email,
+      subject: "Welcome to NGO-TECH Project Explorer",
+      html: `
            Hi <strong>${firstname}</strong>,
            <p>Thank you so much for checking out and signing up on my project explorer application. </p>
            <p> Outlined below are features of my application at the moment. Expect more to come in the nearest future:  </p>
@@ -131,25 +100,29 @@ const sendWelcomeMail = async (email, firstname) => {
                     <li> UNTIL THEN FEEL FREE TO REACH ME ON MY DEVELOPER EMAIL @ ngotechdev@gmail.com about any suggestions, ideas or feedback you may have!  </li>
            </ul>
            <h3> Have a wonderful day! </h3>
-        `
+        `,
+    };
+
+    const result = await transporter.sendMail(mail);
+    console.log("The result from sending ", result);
+
+    if (result.accepted) {
+      return [true, "User Welcome mail sent successfully."];
+    } else {
+      return [
+        false,
+        result.code,
+        "Something went wrong in sending welcome mail to user.",
+      ];
     }
+  } catch (error) {
+    console.log(error);
+    return [
+      false,
+      error,
+      "Something went wrong in sending Welcome mail to user.",
+    ];
+  }
+};
 
-    // const result = await transporter.sendMail(mail)
-    transporter.sendMail(mail, function (err, info) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("info.messageId: " + info.messageId);
-            console.log("info.envelope: ", info.envelope);
-            console.log("info.accepted: ", info.accepted);
-            console.log("info.rejected: ", info.rejected);
-            console.log("info.pending: " + info.pending);
-            console.log("info.response: " + info.response);
-
-        }
-        transporter.close();
-    })
-    
-}
-
-module.exports = { sendResetPwdMail, sendWelcomeMail }
+module.exports = { sendResetPwdMail, sendWelcomeMail };

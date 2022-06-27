@@ -31,13 +31,17 @@ const getLast4Projects = async () => {
   }
 };
 
-const getAllProjects = async () => {
+const getAllProjects = async ({page=1}) => {
   try {
-    const projects = await Project.find({}).sort({ _id: -1 }); //Return all projects in descending order (Most recent)
-    return projects;
+    //Return all projects with a page limit of 8 projects per page
+    const pageLimit = 8;
+    const projects = await Project.find({}).sort({_id:-1}).skip( (page-1)*pageLimit).limit(pageLimit); //Return all projects (8 per page) in descending order (Most recent)
+    const numOfProjects = await Project.find({}).countDocuments()
+    const allProjectPages = Math.ceil(numOfProjects/pageLimit);
+    return [true, projects, numOfProjects, allProjectPages ];
   } catch (error) {
     console.log(error);
-    return translateError(error);
+    return [false, translateError(error)];
   }
 };
 
@@ -146,6 +150,42 @@ const deleteProject = async (id) => {
   }
 };
 
+const updateLastViewed = async(id, userId) => {
+  let project = await Project.findById(id);
+  console.log("Project ", project);
+
+  let userProject = await Project.findOne({id:id, 'lastVisited.userId':userId})
+  console.log("User Project ", userProject);
+
+  // If a user has never viewed a project before, update the project last visited array to include the users view and the date
+  if(userProject == null) {
+
+    project.lastVisited.map((elem) => {
+      console.log("The elenm", elem)
+    })
+
+    let updatedProjectWithLastVisited = await Project.findByIdAndUpdate(id, {$set: {lastVisited: project.lastVisited.addToSet({userId, count:1, date: Date.now()}) }}, {new:true})
+    console.log("Updated project ", updatedProjectWithLastVisited)
+    return [true, updatedProjectWithLastVisited]
+  } 
+  // Update the date and count of the last time the user has viewed the project
+  else {
+
+    project.lastVisited.map((elem) => {
+      console.log("The elenm", elem)
+    })
+
+    let viewCount = userProject.lastVisited[0].count;
+    console.log("The count ", viewCount);
+
+    let updatedProjectWithLastVisited = await Project.findByIdAndUpdate(id, {$set: {lastVisited: project.lastVisited.addToSet({userId, count:viewCount+1, date: Date.now()}) }}, {new:true})
+    console.log("Updated project with changed date and count", updatedProjectWithLastVisited)
+    return [true, updatedProjectWithLastVisited, "Count increased and Date updated"]
+
+  }
+
+}
+
 module.exports = {
   createProject,
   getLast4Projects,
@@ -153,4 +193,5 @@ module.exports = {
   getProjectById,
   updateProject,
   deleteProject,
+  updateLastViewed
 };

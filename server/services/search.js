@@ -32,19 +32,17 @@ const searchProject = async({search, searchBy, page=1}) => {
 }
 
 /* Get Search results including pagination */
-const getSearchResult = async ({search, searchBy, page=1}) => {
+const getSearchResult = async ({search, searchBy="name", page=1}) => {
 
     let results = [];
     let searchCount = null;
     const pageLimit = 4;    //Hpw many results should be returned per page
 
     console.log("results from search ", results);
-   
-    if(search === undefined && (searchBy === undefined || searchBy !== undefined)) {
-        results = await Project.find({}).sort({_id:-1}).skip( (page-1)*pageLimit).limit(pageLimit);
-        searchCount = await Project.find({}).countDocuments()
-    }
-    
+
+    console.log("searchby ", searchBy);
+    console.log("searchby ", page);
+
     if(searchBy === "name") {
         results = await Project.find({name: {$regex: `${search}`, $options:"i" }}).skip((page-1) * pageLimit).limit(pageLimit)
         searchCount = await Project.find({name: {$regex: `${search}`, $options:"i" }}).countDocuments()
@@ -63,9 +61,9 @@ const getSearchResult = async ({search, searchBy, page=1}) => {
 
     } 
     else {
-        // return [false, "Invalid search type. Valid Search type includes - name, abstract, authors and tags"]
-        results = await Project.find({}).sort({_id:-1}).skip( (page-1)*pageLimit).limit(pageLimit);
-        searchCount = await Project.find({}).countDocuments()
+        return [false, "Invalid search type. Valid Search type includes - name, abstract, authors and tags"]
+        // results = await Project.find({}).sort({_id:-1}).skip( (page-1)*pageLimit).limit(pageLimit);
+        // searchCount = await Project.find({}).countDocuments()
     }
 
     // To calculate the total number of pages a search has results for

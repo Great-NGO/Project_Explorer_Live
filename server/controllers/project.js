@@ -1,8 +1,8 @@
 const { response } = require('express');
 const express = require('express');
 const router = express.Router();
-const { authorize } = require("../middleware/auth");
-const { createProject, getLast4Projects, getProjectById, updateProject, deleteProject } = require('../services/project');
+const { authorize, checkUser } = require("../middleware/auth");
+const { createProject, getLast4Projects, getProjectById, updateProject, deleteProject, updateLastViewed } = require('../services/project');
 const { getUserById } = require('../services/user');
 const { createProjectValidator, validate } = require('../validator/index');
 
@@ -15,13 +15,22 @@ router.get('/projectsShowcase', async (req, res) => {
 })
 
 //To get a specific project
-router.get('/project/:id', async (req, res) => {
+router.get('/project/:id', checkUser, async (req, res) => {
     // console.log('Req user from project route', req);
     const { id } = req.params;
+    let user = req.user;
+    console.log("The user ", user);
     const project = await getProjectById(id);
     console.log('The specific project', project);
     if(project[0] !== false) {
-        res.json({project:project[1], status:"OK"});
+        if(user !== undefined) {
+            let userId = user.user_id;
+            let updateUserLastSeen = await updateLastViewed(id, userId);
+            console.log("Update User last seen ", updateUserLastSeen);
+            return res.json({project:updateUserLastSeen[1], status: "OK"})
+        } else {
+            res.json({project:project[1], status:"OK"});
+        }
     } else {
         return res.status(400).json({error: project[1], status: "error"})
     }
@@ -124,7 +133,7 @@ router.delete('/deleteProject/:id', authorize, async (req, res) => {
         createdById = createdById.toString()    //To match it with userId
         // A Logged in user that didn't create the project can not edit it
         if( createdById !== userId) {
-            return res.status(400).json({errors: ["Unauthorized access! Can't delete project because you are not the Project owner"]})
+            return res.status(401).json({errors: ["Unauthorized access! Can't delete project because you are not the Project owner"]})
         }
     
        const deletedProject = await deleteProject(id);
