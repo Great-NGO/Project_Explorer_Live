@@ -35,7 +35,7 @@ const sendResetPwdMail = async (email, firstname, id) => {
            Hi <strong>${firstname}</strong>,
            <p>Having an issue with remembering your password? Well don't worry! </p>
            <p>Click the link below to complete your password reset process </p>
-           <br> <a href="${url}">Click here to reset your password</a>
+           <br> <a href="${url3}">Click here to reset your password</a>
         `,
     };
 
