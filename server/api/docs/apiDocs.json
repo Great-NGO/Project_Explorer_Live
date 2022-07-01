@@ -1,5 +1,5 @@
 {
-    "/": "API DOCs for NGO-TECH Project Explorer",
+    "/api": "API DOCs for NGO-TECH Project Explorer",
     "/api/signup": "Signup (POST request)",
     "/api/login": "Login (POST request)",
     "/api/logout": "Logout (GET request)",
@@ -7,6 +7,7 @@
     "/api/graduationYears": "Get all graduation Years",
     "/api/user/:userId": "Get user by id",
     "/api/editProfile/:userId": "Edit User profile by id (PUT request) (Authentication required)",
+    "/api/editProfile/password/:userId":"Update User password by id (PUT request) (Authentication required)",
     "/api/projectsShowcase": "Get last 4 projects",
     "/api/project/:id": "Get project by id",
     "/api/projects/submit": "Create a new project (Authentication required)",

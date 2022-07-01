@@ -271,6 +271,12 @@ const EditProject = () => {
                       <Form.Control type="text" name="tags" value={tags} placeholder="Use # to tag project with different topics (e.g. #javascript)" onChange={handleInputChange} />
                   </Form.Group>
 
+                
+                  <Form.Group controlId="formFile" className="mb-3 col-md-12">
+                    <Form.Label>Update Project File</Form.Label>
+                    <Form.Control type="file" name="projectFile" accept=".doc,.docx, application/msword, .pdf" onChange={() => console.log("Update Project file")}/>
+                  </Form.Group>
+  
                   <Button variant="success" type="submit" className="mt-2">
                       Update
                   </Button>

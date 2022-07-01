@@ -12,6 +12,7 @@ const commentSchema = new Schema({
         default: Date.now
     },
     replies: [{type: mongoose.ObjectId, ref: "commentReply"}]
+    // replies: [{type: mongoose.ObjectId, ref: "comment"}]         //This would have saved me from creating a new document/database and i could easily have as many nested comments as i want
 },
     { timestamps: true }
 );

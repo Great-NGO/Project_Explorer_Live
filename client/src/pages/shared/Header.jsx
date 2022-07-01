@@ -73,17 +73,18 @@ const Header = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto pt-2">
-            <Form className="d-flex">
+            <Form className="d-flex" action="/search">
               <FormControl
                 type="search"
+                name="search"
                 placeholder="Search"
                 className="me-2"
                 aria-label="Search"
               />
               <Button variant="outline-success">Search</Button>
             </Form>
-            <Nav.Link href="/projects">Projects</Nav.Link>
-            <Nav.Link href="/projects/submit">Submit</Nav.Link>
+            <Nav.Link href="/search">Discover Projects</Nav.Link>
+            <Nav.Link href="/projects/submit">Submit Project</Nav.Link>
           </Nav>
           
           <Nav className="pt-1">

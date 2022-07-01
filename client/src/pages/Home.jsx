@@ -66,7 +66,7 @@ const Home = () => {
           
           <Container fluid="md">
         
-          {isLoading ? <Loader size={"200px"}/> : 
+          {isLoading ? <Loader size={"150px"}/> : 
 
             <Row xs={1} lg={4} md={2} sm={2} className="g-4 showcase mt-2">
               {projects&&projects.map((project) => (

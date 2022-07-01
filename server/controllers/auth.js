@@ -1,9 +1,6 @@
 require("dotenv").config();
-const bcrypt = require("bcryptjs");
 const express = require("express");
-const User = require("../models/user");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const {
   continueSignupValidator,
   validate,
@@ -19,7 +16,6 @@ const { FindUserByEmail, createUser, getUserById, updateUser, updateUserPassword
 const { translateError } = require("../services/mongo_helper");
 
 const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_CLIENT_ID);
-
 
 console.log("Google client id from node server ", process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
@@ -56,6 +52,12 @@ try {
     if(userExists[0] !== false ) {
         //The User already has an account
         userExists = userExists[1];
+        if(userExists.googleID === null || userExists.googleID == undefined) {
+            await updateUser(userExists._id, {googleID})
+         //    let update = await updateUser(userExists._id, {googleID})
+         //    console.log("Updated user to include  googleid", update)
+         }
+ 
         // Create token
         const token = userExists.token;
         //Save token in a cookie and send back to the frontend

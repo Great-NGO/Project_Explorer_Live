@@ -5,12 +5,11 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema(
   {
-    facebookID: { type: String, unique: true },
-    googleID: { type: String, unique: true },
+    facebookID: { type: String },
+    googleID: { type: String },
     accountVerified: {
       type: Boolean,
       default: false,
-      
     },
     firstname: { type: String, required: true },
     lastname: { type: String, required: true },
