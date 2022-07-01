@@ -83,8 +83,8 @@ const Header = () => {
               />
               <Button variant="outline-success">Search</Button>
             </Form>
-            <Nav.Link href="/projects">Projects</Nav.Link>
-            <Nav.Link href="/projects/submit">Submit</Nav.Link>
+            <Nav.Link href="/search">Discover Projects</Nav.Link>
+            <Nav.Link href="/projects/submit">Submit Project</Nav.Link>
           </Nav>
           
           <Nav className="pt-1">

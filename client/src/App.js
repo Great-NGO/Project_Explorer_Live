@@ -18,6 +18,7 @@ import EditProfile from './pages/EditProfile';
 import ResetPassword from './pages/ResetPassword';
 import Test from './pages/Test';
 import ContinueSignup from './pages/ContinueSignup';
+import Search from './pages/Search';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/" element={<Home/>}/>
         <Route path="/signup" element={ <Signup />} />
         <Route path="/login" element={ <Login />} />
+        <Route path='/search' element={ <Search />} />
         <Route path="/projects/submit" element={ <CreateProject />} />
         <Route path="/projects/:id" element={ <Project />} />
         <Route path="/editProject/:id" element={<EditProject />} />

@@ -16,7 +16,7 @@ router.get('/projectsShowcase', async (req, res) => {
 
 //To get a specific project
 router.get('/project/:id', checkUser, async (req, res) => {
-    // console.log('Req user from project route', req);
+
     const { id } = req.params;
     let user = req.user;
     console.log("The user ", user);
@@ -25,14 +25,13 @@ router.get('/project/:id', checkUser, async (req, res) => {
     if(project[0] !== false) {
         if(user !== undefined) {
             let userId = user.user_id;
-            let updateUserLastSeen = await updateLastViewed(id, userId);
+            let updateUserLastSeen = await updateLastViewed(id, userId);    //This updates the last viewed property of the project and returns the result
             console.log("Update User last seen ", updateUserLastSeen);
-            return res.json({project:updateUserLastSeen[1], status: "OK"})
-        } else {
-            res.json({project:project[1], status:"OK"});
         }
+        res.json({project:project[1], status:"OK"});
+        
     } else {
-        return res.status(400).json({error: project[1], status: "error"})
+        return res.status(404).json({error: project[1], status: "error"})
     }
 })
 

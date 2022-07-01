@@ -68,6 +68,7 @@ const getSearchResult = async ({search, searchBy="name", page=1}) => {
 
     // To calculate the total number of pages a search has results for
     const resultPages = Math.ceil(searchCount/pageLimit);
+    resultPages == 0? page=0 :page
     return [ true, results, searchCount, resultPages, page, searchBy]
 }
 
