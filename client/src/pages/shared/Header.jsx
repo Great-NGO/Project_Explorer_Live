@@ -81,7 +81,7 @@ const Header = () => {
                 className="me-2"
                 aria-label="Search"
               />
-              <Button variant="outline-success">Search</Button>
+              <Button type="submit" variant="outline-success" >Search</Button>
             </Form>
             <Nav.Link href="/search">Discover Projects</Nav.Link>
             <Nav.Link href="/projects/submit">Submit Project</Nav.Link>

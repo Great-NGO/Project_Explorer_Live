@@ -12,11 +12,13 @@ router.get("/search", checkUser, async (req, res) => {
     let searchedItem = req.query.search;
     let criteria = req.query.searchBy || "name";
     let page = req.query.page || 1;
+    console.log("The page ", page);
     page == 0 ? page=1 : page;  //If page number is 0 from req params make it 1
 
 
     console.log("The searched item ", searchedItem);
     console.log("The criteria ", criteria);
+    console.log("The page ", page);
   
     // If there is no searched item, return all the projects in a paginated response
     if(page >= 1 && (searchedItem === undefined || searchedItem.length < 1)){
