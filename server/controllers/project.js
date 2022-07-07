@@ -57,7 +57,7 @@ router.post('/projects/submit', authorize, createProjectValidator(), validate, a
     tags = tags.map((element) => element.trim())
 
     //To add a #symbol to the first element in our tag arrays
-    tags[0] = `#${tags[0]}`;
+    // tags[0] = `#${tags[0]}`;
     
     let project = await createProject({name, abstract, authors, tags, createdBy})
     if(project[0] !== false) {
@@ -98,7 +98,7 @@ router.put('/editProject/:id', authorize, createProjectValidator(), validate, as
         authors = authors.map((element) => element.trim());
         tags = tags.map((element) => element.trim());
         //To add a #symbol to the first element in our tag arrays
-        tags[0] = `#${tags[0]}`;
+        // tags[0] = `#${tags[0]}`;
     
         let fields = { name, abstract, authors, tags} ;
     

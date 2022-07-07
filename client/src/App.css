@@ -54,7 +54,7 @@ html, body {
 }
 .showcase .projectTags{
   text-decoration: none;
-  cursor: default;
+  cursor: pointer;
   font-weight: small;
   color: #198754;  
 }

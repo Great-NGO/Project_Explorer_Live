@@ -5,8 +5,12 @@ import AuthService from '../../services/auth';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../../context/ReferenceDataContext";
+import { useRef } from "react";
 
 const Header = () => {
+
+  // Using the useRef hook
+  const search = useRef(null);    //To access the DOM directly and to be able to manipulate/use the value of the dom element we'd make a reference to
 
   const { getCurrentUser, logout } = AuthService;
   const [usernameText, setUsernameText] = useState('')
@@ -61,6 +65,12 @@ const Header = () => {
 
     }
   }, [firstname])
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    const {value } = search.current;  //To get the value of the DOM Input search element
+    navigate(`/search?search=${value}&searchBy=name`)
+  }
   
 
   console.log("The firstname ", firstname)
@@ -73,13 +83,14 @@ const Header = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto pt-2">
-            <Form className="d-flex" action="/search">
+            <Form className="d-flex" onSubmit={handleSubmit}>
               <FormControl
-                type="search"
+                // type="search"
                 name="search"
                 placeholder="Search"
                 className="me-2"
                 aria-label="Search"
+                ref={search}    //DOM element we are making reference to get the value.
               />
               <Button type="submit" variant="outline-success" >Search</Button>
             </Form>

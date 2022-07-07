@@ -1,13 +1,20 @@
 // Might convert project page to SSR with Next js later on
-
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { Row, Container, Col, Card, Form, FormControl, Button, InputGroup, Pagination } from "react-bootstrap";
 import Layout from "./shared/Layout";
 import AuthService from '../services/auth';
+
 import Loader from "../components/Loader";
 import { useSearchParams } from "react-router-dom";
 
+
+//Importing and using the getCurrent user method
+const { getCurrentUser } = AuthService;
+
 const Search = () => {
+
+  const searchRef = useRef(null);
+  const searchByRef = useRef(null);
   
   const [projects, setProjects] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -16,45 +23,52 @@ const Search = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [searchBy, setSearchBy] = useState(''||"name");
+  const [searchBy, setSearchBy] = useState('');
+
+  // Store Users id for last seen
+  const [userId, setUserId] = useState('');
+
 
   // Use Search params
   const [searchParams, setSearchParams] = useSearchParams();
-
-
-  console.log("The search params", searchParams.get("search") )
 
   useEffect(() => {
     let searchFromNav = searchParams.get("search");
     let searchByFromNav = searchParams.get("searchBy");
 
     console.log("Searchhhhh ", searchFromNav);
+    console.log("Searchhhhh BYYYYYy ", searchByFromNav);
     let url;
-    searchFromNav == null ? url = `/api/search` : url = `/api/search?search=${searchFromNav}`;
+
+    searchByFromNav == null ? searchFromNav == null ? url=`/api/search` : url = `/api/search?search?search=${searchFromNav}&searchBy=name` : url = `/api/search?search=${searchFromNav}&searchBy=${searchByFromNav}`
     fetch(url)
       .then(async (response) => {
         const res = await response.json();
         console.log("The result ", res);
-        setNumOfResult(res.allProjects)
+        //Invalid searchBy criteria from the url
+        res.error ? setNumOfResult(0) : setNumOfResult(res.allProjects)
         setCurrentPage(res.currentPage);
         setPage(res.currentPage);
         // console.log("The current page ", currentPage)
         setNumOfPage(res.numOfPages);
+        
+        searchRef.current.value=searchFromNav   //Show the input from the navbar as the search value
+        searchByRef.current.value=searchByFromNav   //Show the input from the navbar as the searchBy value
+        
+        // Set the search and searchBy states to contain the values from the search and searchBy ref
+        setSearch(searchRef.current.value)
+        setSearchBy(searchByRef.current.value)
+        
         const { data } = res
         console.log('The projects ', data);
         setProjects(data);
         setIsLoading(false);
-      })
 
+        getCurrentUser() !== null ? setUserId(getCurrentUser()._id) : setUserId('');
+
+      })
   }, [searchParams])
   
-  console.log("The current page ", currentPage)
-  console.log("The page ", page)
-  console.log(page===1)
-  console.log("The pages number of result ", numOfPage)
-
-  console.log("The first page equals 1", page + " T/f ", page===1);
-
   
 // On submit search result
 const handleSearch = (evt) => {
@@ -63,25 +77,35 @@ const handleSearch = (evt) => {
   console.log("ONsubmit ")
   setIsLoading(true)    //Load Loader component
 
-  fetch(`/api/search?search=${search}&searchBy=${searchBy}&page=${currentPage}`)
+  fetch(`/api/search?search=${searchRef.current.value}&searchBy=${searchByRef.current.value}&page=${currentPage}`)
   .then(async (response) => {
     const res = await response.json();
     console.log("The result ", res);
     setNumOfResult(res.allProjects)
-    setCurrentPage(res.currentPage);
-    setPage(res.currentPage);
+    setCurrentPage(parseInt(res.currentPage));
+    setPage( parseInt(res.currentPage));
     setNumOfPage(res.numOfPages);
+
+    setSearch(searchRef.current.value)    //Set the search state to hold the value of the search ref
+    setSearchBy(searchByRef.current.value)  //Set the searchBy state to hold the value of the searchBy ref
+
     const { data } = res
     console.log('The projects ', data);
-    setSearchParams({search, searchBy})
+    setSearchParams({search:searchRef.current.value, searchBy:searchByRef.current.value})
 
     setProjects(data);
     setIsLoading(false);
+  }).catch((err) => {
+    console.log("EEEERRROOORRR")
+    setNumOfResult(0);
+    setIsLoading(false);
+
   })
 
   
 }
 
+// Click the First page
   const handleClickFirst = (evt) => {
     evt.preventDefault();
  
@@ -94,7 +118,7 @@ const handleSearch = (evt) => {
       console.log("The result ", res);
       setCurrentPage(res.currentPage);
       setNumOfResult(res.allProjects)
-     
+      
       const { data } = res
       console.log('The projects ', data);
       setProjects(data);
@@ -171,18 +195,6 @@ const handleSearch = (evt) => {
   
   }
 
-  const handleChange = (evt) => {
-    const {name, value} = evt.target;
-
-    if(name === "search") {
-      setSearch(value);
-
-    } else if(name === "searchBy") {
-      setSearchBy(value);
-
-    }
-    
-  }
 
   console.log("Search ", search)
   console.log("Search By", searchBy)
@@ -194,7 +206,7 @@ const handleSearch = (evt) => {
         <>
         <nav className="searchNavbar container">
             <div >
-              <h2 id="project_gallery" className="mt-3"> Project Gallery</h2>
+              <h2 id="project_gallery" className="mt-3"> <a href="/search" style={{textDecoration:"none", color:"#2b3420"}}> Project Gallery </a> </h2>
             </div>
 
                 <Form onSubmit={handleSearch} style={{backgroundColor: "lightgray"}} className="px-3 py-3">
@@ -203,12 +215,12 @@ const handleSearch = (evt) => {
                       <FormControl
                           // type="search"
                           name="search"
-                          value={search}
+                          ref={searchRef}     //The DOM element we want to access directly to allow for searches and to show the value
+                  
                           placeholder="Search Project name, authors, abstract, tags"
                           className="me-2 mt-1"
                           aria-label="Search"
-                          onChange={handleChange}
-                          // required
+                          required
                         />
                     </Col>
                     <Col lg={3} md={6}>
@@ -216,16 +228,13 @@ const handleSearch = (evt) => {
                         <InputGroup.Text>SearchBy</InputGroup.Text>
                         <Form.Select
                           name="searchBy"
-                          value={searchBy}
-                          onChange={handleChange }
+                          ref={searchByRef}
                           required
                         >
-                           
                             <option value="name">Name</option>
                             <option value="abstract">Abstract</option>
                             <option value="authors">Authors</option>
                             <option value="tags">Tags</option>
-                            {/* <option value="">All</option> */}
                        
                           </Form.Select>
 
@@ -252,9 +261,9 @@ const handleSearch = (evt) => {
 
           <>
             {numOfResult < 1 ? 
-              <Row xs={1} lg={4} md={2} sm={2} className="g-4 showcase">
-                  <h3>No results found</h3>
-              </Row> 
+              <Container className="my-3" style={{border: "1px solid ", marginBottom:""}}>
+                  <h4 style={{textAlign:"center"}} className="m-5">No results found</h4>
+              </Container> 
 
               : 
               <>
@@ -270,8 +279,34 @@ const handleSearch = (evt) => {
                                     {project.authors.join(",")}
                                   </Card.Link>
                                   <Card.Text className="projectText">{project.abstract.substring(0, 100)} ...</Card.Text>
-                                  <Card.Link href="#" className="projectTags"> {project.tags.join('#')}</Card.Link>
-                                  {/* <p>Last visited</p> */}
+
+                                  {project&&project.tags.map((tag) => (
+                                    <span>
+                                      <Card.Link href={`/search?search=${tag}&searchBy=tags`} className="projectTags" key={tag}> #{tag} </Card.Link>
+                                    </span>
+                                  ))}
+                       
+                                  {/* Show Last visited date */}
+                                  {getCurrentUser() !== null ? 
+                                  
+                                    <div>
+                                      
+                                      {project.lastVisited.map((object) => (
+                                        <>
+                                          {object.userId === userId ? 
+                                            <>
+                                              {/* {object.count} */}
+                                              <p>You've visited this page: {object.count} times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+                                              
+                                            </> : null
+                                          }
+                                
+                                        </>
+                                      ))}
+                                    </div> : null
+                                }
+
+
                               </Card.Body>
                             </Card>
                           </Col>
