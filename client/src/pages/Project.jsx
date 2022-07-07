@@ -208,7 +208,7 @@ const sortDescending = (evt) => {
                         {projTags && projTags.map((tags, index) => {
                             return (
                             <small style={{ color: "dodgerblue", fontSize: "15px" }} key={index}> 
-                                {tags} 
+                                #{tags} 
                               </small>
                       
                             );

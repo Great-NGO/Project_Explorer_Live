@@ -1,13 +1,14 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { Row, Container, Col, Card } from "react-bootstrap";
 import Layout from "./shared/Layout";
 import AuthService from '../services/auth';
 import Loader from "../components/Loader";
 
+//Importing and using the getCurrent user method
+const { getCurrentUser } = AuthService;
 
 const Jumbotron = () => {
-  //Importing and using the getCurrent user method
-  const { getCurrentUser } = AuthService;
+  
   return (
     <Container>
       <section className="p-5 mb-2 mt-4 border rounded-3 container jumbotron">
@@ -42,6 +43,7 @@ const Home = () => {
   
   const [projects, setProjects] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
 
@@ -54,8 +56,11 @@ const Home = () => {
         setIsLoading(false);
       })
 
+      getCurrentUser() !== null ? setUserId(getCurrentUser()._id) : setUserId('');
+
   }, [])
   
+  console.log("The user id ", userId);
 
   return (
     <>
@@ -78,8 +83,35 @@ const Home = () => {
                         <Card.Link href="#" className="projectAuthors">
                           {project.authors.join(",")}
                         </Card.Link>
-                        <Card.Text className="projectText">{project.abstract.substring(0, 100)} ...</Card.Text>
-                        <Card.Link href="#" className="projectTags"> {project.tags.join('#')}</Card.Link>
+                        <Card.Text className="projectText">{project.abstract.substring(0, 100)} ...</Card.Text>            
+
+                        {project&&project.tags.map((tag) => (
+                          <span>
+                            <Card.Link href={`/search?search=${tag}&searchBy=tags`} className="projectTags" key={tag}> #{tag} </Card.Link>
+                          </span>
+                        ))}
+                       
+                       {getCurrentUser() !== null ? 
+                       
+                        <div>
+        
+                          {project.lastVisited.map((object) => (
+                            <>
+                              {object.userId === userId ? 
+                                <>
+                                  {/* {object.count} */}
+                                  <p>You've visited this page: {object.count} times. <br /> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+                                  
+                                </> : null
+                              }
+                    
+                            </>
+                          ))}
+
+                        </div> : null
+
+                      }
+
                      </Card.Body>
                   </Card>
                 </Col>
