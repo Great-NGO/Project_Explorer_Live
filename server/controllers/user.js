@@ -54,12 +54,12 @@ router.post('/signup', userSignupValidator(), validate, async(req, res) => {
             console.log(`The User is ${user}`)
             res.status(200).json({ message: "User Signup successful! Please login", status:"Signup OK"});
         } else {
-            return res.status(400).json({error: user[1], status: "error"})
+            return res.status(500).json({error: "Something went wrong on our end", actualError: user[1], status: "error"})
         }
 
     } catch (error) {
         console.log(error)
-        return res.status(422).json({error: error, status: "error", message: "Something unexpected happened"})
+        return res.status(422).json({error: "Something went wrong on our end", actualError: error, status: "error", message: "Something unexpected happened"})
 
     }
 

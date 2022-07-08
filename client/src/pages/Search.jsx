@@ -295,8 +295,12 @@ const handleSearch = (evt) => {
                                         <>
                                           {object.userId === userId ? 
                                             <>
-                                              {/* {object.count} */}
-                                              <p>You've visited this page: {object.count} times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+                                              {object.count > 50 ? 
+                                                <p>You've visited this project more than 50 times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+                                                  :
+                                                <p>You've visited this project: {object.count} times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+
+                                              }
                                               
                                             </> : null
                                           }
@@ -305,7 +309,6 @@ const handleSearch = (evt) => {
                                       ))}
                                     </div> : null
                                 }
-
 
                               </Card.Body>
                             </Card>
