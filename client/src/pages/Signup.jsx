@@ -273,7 +273,7 @@ const Signup = () => {
               <Form.Group as={Col} controlId="formGridMatricNo" sm={4}>
                 <Form.Label>Matriculation Number</Form.Label>
                 <Form.Control
-                  placeholder="e.g 16/2020"
+                  placeholder="Your Matric number."
                   value={matricNumber}
                   name="matricNumber"
                   onChange={(evt) => dispatch({ type: 'field', fieldName: 'matricNumber', payload: evt.currentTarget.value}) }

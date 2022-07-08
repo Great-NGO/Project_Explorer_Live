@@ -51,7 +51,7 @@ router.post('/project/new/comment', checkUser, createCommentValidator, async (re
                 console.log("Comments saved and added to projects successfully");
                 res.status(200).json({ status: "ok", data: updatedProjectWithComment[1] });
             } else {
-                return res.status(400).jsom({error:updatedProjectWithComment[1], status:"error"})
+                return res.status(400).json({error:updatedProjectWithComment[1], status:"error"})
             }
         } else {
             return res.status(400).json({error: comment[1], status: "error"})

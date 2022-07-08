@@ -34,7 +34,7 @@ const getLast4Projects = async () => {
 const getAllProjects = async ({page=1}) => {
   try {
     //Return all projects with a page limit of 8 projects per page
-    const pageLimit = 4;
+    const pageLimit = 8;
     const projects = await Project.find({}).sort({_id:-1}).skip( (page-1)*pageLimit).limit(pageLimit); //Return all projects (8 per page) in descending order (Most recent)
     const numOfProjects = await Project.find({}).countDocuments()
     const allProjectPages = Math.ceil(numOfProjects/pageLimit);

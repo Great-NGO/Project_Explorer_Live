@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect} from "react";
 import { Row, Container, Col, Card } from "react-bootstrap";
 import Layout from "./shared/Layout";
 import AuthService from '../services/auth';
@@ -91,26 +91,29 @@ const Home = () => {
                           </span>
                         ))}
                        
-                       {getCurrentUser() !== null ? 
-                       
-                        <div>
-        
-                          {project.lastVisited.map((object) => (
-                            <>
-                              {object.userId === userId ? 
-                                <>
-                                  {/* {object.count} */}
-                                  <p>You've visited this page: {object.count} times. <br /> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+                        {/* Show Last visited date */}
+                        {getCurrentUser() !== null ? 
                                   
-                                </> : null
+                          <div>
+                                    
+                            {project.lastVisited.map((object) => (
+                              <>
+                               {object.userId === userId ? 
+                                 <>
+                                    {object.count > 50 ? 
+                                      <p>You've visited this project more than 50 times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+                                         :
+                                      <p>You've visited this project: {object.count} times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+
+                                    }
+                                            
+                                       </> : null
+                                }
+                              
+                                      </>
+                            ))}
+                          </div> : null
                               }
-                    
-                            </>
-                          ))}
-
-                        </div> : null
-
-                      }
 
                      </Card.Body>
                   </Card>

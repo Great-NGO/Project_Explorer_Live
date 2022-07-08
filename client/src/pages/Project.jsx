@@ -8,6 +8,11 @@ import AuthService from '../services/auth';
 import JoditEditor from "jodit-react";
 //Import reducer function to be used my useReducer hook
 import { reducer } from "../reducers/project";
+import Comment from "../components/comments/Comment";
+
+
+// Importing the isUserProjectOwner method and getCurrentUser method
+const { isUserProjectOwner, getCurrentUser } = AuthService;
 
 const Project = () => {
 
@@ -15,14 +20,11 @@ const Project = () => {
   const [ content, setContent ] = useState('');
 
   const config = {
-    readonly: false
+    readonly: false,
+    // placeholder: "Leave a comment..."
   }
 
   const params = useParams();
-  
-  // Importing the isUserProjectOwner method 
-  const { isUserProjectOwner, getCurrentUser } = AuthService;
-
 
 //Initial states (useReducer hook to handle Change and show initial values)
     let initialState = {
@@ -39,10 +41,14 @@ const Project = () => {
       // error: []
     }
 
-  // const [project, setProject] = useState({});
+  const [project, setProject] = useState({});
   const [comments, setComments] = useState([]);
+  //For sorting comments
+  const [sortOrder, setSortOrder] = useState('')
+  // To toggle between ascending or descending order
   const [sortStatus, setSortStatus ] = useState(true);
-
+  const [userId, setUserId] = useState(null);
+  // const [projectOwnerId, setProjectOwnerId] = useState(null);
   
   //Modal Code
   const [show, setShow] = useState(false);
@@ -54,7 +60,38 @@ const Project = () => {
   const handleCommentSubmit = (event) => {
     event.preventDefault();
 
-    console.log('Typing')
+    const formData = {
+      text:editor.current.value,
+      projectID:project._id
+    }
+
+    console.log("The comment ready to be sent", formData)
+
+    fetch('/api/project/new/comment', {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: { "Content-Type": "application/json"}
+    }).then((res) => {
+      console.log("The comment res", res)
+      return res.json()
+    }).then((data) => {
+      console.log("The data ", data)
+      if(data.status === "ok" || data.status !== "error") {
+        const newComments = data.data.comments;
+        console.log("The new comments ", newComments)
+        setComments(newComments);
+        // To scroll to the top (on smaller screens) after comment has been left
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        })
+         //Clear input
+         editor.current.value=''
+
+      } else {
+        alert("Failed to leave comment on project.")
+      }
+    })
   }
 
   let projectId = params.id;
@@ -72,13 +109,19 @@ const Project = () => {
         data = data.project;
 
         dispatch({type: 'loadProjectDetails', data:data})
+        setProject(data)
+        // console.log('The Project Data: ', project);
         setComments(data.comments);
     
+        getCurrentUser() !== null ? setUserId(getCurrentUser()._id) : setUserId('');
+
       })
       .catch((err) => {
         console.log("Error is: ", err);
       });
   }, [projectId]);
+
+  console.log('The Project: ', project);
 
 
 //Invoking the useReducer hook and extracting input elements from our state
@@ -89,13 +132,24 @@ let { projName, projAbstract, projAuthors, projTags, createdBy, profilePicture, 
 // Sorting Methods
 const sortByDateOrLikes = (evt) => {
   const { value } = evt.target;
+  setSortOrder(value);
 
   if (value === "likes") {
     console.log("Sort by likes");
+    const sorted = comments.sort((a, b) => {
+      return b.likes.length - a.likes.length;
+    })
+    console.log("Sorted by likes", sorted)
+    setComments(sorted);
   }
   else if (value === "date") {
-
+    // By default comments will be sorted by date in descending order
     console.log("Sort by datee")
+    const sorted = comments.sort((a, b) => {
+      return new Date(b.date) - new Date(a.date);
+    })
+    console.log("SOrted by date", sorted);
+    setComments(sorted);
   }
 }
 
@@ -103,6 +157,10 @@ const sortAscending = (evt) => {
   console.log("Ascending")
   if (sortStatus) {
     setSortStatus(false)
+    let sorted = comments.reverse();
+    console.log("Ascending sorted", sorted);
+    setComments(sorted);
+    setSortStatus(false);
   }
 }
 
@@ -110,11 +168,13 @@ const sortDescending = (evt) => {
   console.log("Descending");
 
   if (sortStatus === false) {
+    let sorted = comments.reverse();
+    console.log("Descending sorted", sorted);
+    setComments(sorted);
     setSortStatus(!sortStatus)
   }
 
 }
-
 
   return (
     <Layout>
@@ -242,7 +302,7 @@ const sortDescending = (evt) => {
                   <div style={{ float: "right" }}>
                     <span className="sortByText">Sort By </span>
                     <span className="pe-1">
-                      <select className="select" onChange={sortByDateOrLikes}>
+                      <select className="select" onChange={sortByDateOrLikes} >
 
                         <option value="date">Date</option>
                         <option value="likes">Likes</option>
@@ -253,30 +313,23 @@ const sortDescending = (evt) => {
                         {/* The arrows are to sort by either ascending or descending order.. */}
                         {/* The arrows are shown conditionally based on sortStatus. */}
                         {sortStatus ?
-                          <ChevronDoubleUp color="black" size={20} onClick={sortAscending} /> :
-                          <ChevronDoubleDown color="black" size={20} onClick={sortDescending} />
+                          <ChevronDoubleUp color="black" size={20} onClick={sortAscending} style={{cursor:"pointer"}} /> :
+                          <ChevronDoubleDown color="black" size={20} onClick={sortDescending} style={{cursor:"pointer"}} />
                         }
                       </>
                     }
                   </div>
                   <hr></hr>
 
-                  {/* <div className="row">
+                  {/* Load Comments */}
+                  <div className="row">
                     <div className="comments">
                       {comments.map((comment) => (<Comment
                         project={project}
-                        comment={comment} currentUser={user ? user._id : ''} key={comment._id} />))}
+                        comment={comment} currentUser={userId} key={comment._id} />))}
                     </div>
 
-                  </div> */}
-                  {/* <div className="row">
-                    <div className="comments">
-                      {comments.map((comment) => (
-                        {comment}
-                      ))}
-                    </div>
-
-                  </div> */}
+                  </div>
 
                 </div>
               </div>
@@ -290,8 +343,6 @@ const sortDescending = (evt) => {
                 <h4> Leave a Comment</h4>
 
                 <form onSubmit={handleCommentSubmit}>
-            
-                  {/* <DefaultEditor name="text" value={html} onChange={onChange} /> */}
 
                   <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={newContent => {}}/>
 
