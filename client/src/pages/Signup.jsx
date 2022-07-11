@@ -21,8 +21,8 @@ const Signup = () => {
    const [isLoading, setIsLoading] = useState(false)
 
   //We use custom hook - useFetch to populate data for programData and graduationYears
-  const programData = useFetch('/api/programs');
-  const gradYearData = useFetch('/api/graduationYears');
+  const programData = useFetch('/api/v1/programs');
+  const gradYearData = useFetch('/api/v1/graduationYears');
   
   console.log("Using custom useFetch Hook, Our ProgData and gradYearData - ", programData, gradYearData )
   //State for selected program and Graduation Year
@@ -85,7 +85,7 @@ const Signup = () => {
     // Load Loader component
     setIsLoading(true)
 
-    fetch('/api/signup',  {
+    fetch('/api/v1/signup',  {
       method: "POST",
       body: JSON.stringify({ firstname, lastname, email, password, program, matricNumber, graduationYear }),
       headers: {
@@ -131,7 +131,7 @@ const Signup = () => {
   
     const handleGoogleClick = async (response) => {
       console.log("The Google data ", response);
-      const res = await fetch("/api/google-login", {
+      const res = await fetch("/api/v1/google-login", {
         method: "POST",
         body: JSON.stringify({
           credential: response.credential
@@ -273,7 +273,7 @@ const Signup = () => {
               <Form.Group as={Col} controlId="formGridMatricNo" sm={4}>
                 <Form.Label>Matriculation Number</Form.Label>
                 <Form.Control
-                  placeholder="Your Matric number."
+                  placeholder="Your Matric number"
                   value={matricNumber}
                   name="matricNumber"
                   onChange={(evt) => dispatch({ type: 'field', fieldName: 'matricNumber', payload: evt.currentTarget.value}) }

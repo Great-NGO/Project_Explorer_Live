@@ -48,7 +48,7 @@ const Header = () => {
     const authenticated = AuthService.getCurrentUser();
    
     async function fetchUserData(id) {
-      const response = await axios.get(`/api/user/${id}`)
+      const response = await axios.get(`/api/v1/user/${id}`)
       return response.data
     }
 

@@ -3,7 +3,7 @@
 const logout = async () => {
   localStorage.removeItem("user");
   try {
-    const res = await fetch("/api/logout");
+    const res = await fetch("/api/v1/logout");
     console.log(res);
     return await res.json();
   } catch (err) {

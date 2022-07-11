@@ -40,7 +40,7 @@ const Search = () => {
     console.log("Searchhhhh BYYYYYy ", searchByFromNav);
     let url;
 
-    searchByFromNav == null ? searchFromNav == null ? url=`/api/search` : url = `/api/search?search?search=${searchFromNav}&searchBy=name` : url = `/api/search?search=${searchFromNav}&searchBy=${searchByFromNav}`
+    searchByFromNav == null ? searchFromNav == null ? url=`/api/v1/search` : url = `/api/v1/search?search?search=${searchFromNav}&searchBy=name` : url = `/api/v1/search?search=${searchFromNav}&searchBy=${searchByFromNav}`
     fetch(url)
       .then(async (response) => {
         const res = await response.json();
@@ -77,7 +77,7 @@ const handleSearch = (evt) => {
   console.log("ONsubmit ")
   setIsLoading(true)    //Load Loader component
 
-  fetch(`/api/search?search=${searchRef.current.value}&searchBy=${searchByRef.current.value}&page=${currentPage}`)
+  fetch(`/api/v1/search?search=${searchRef.current.value}&searchBy=${searchByRef.current.value}&page=${currentPage}`)
   .then(async (response) => {
     const res = await response.json();
     console.log("The result ", res);
@@ -112,7 +112,7 @@ const handleSearch = (evt) => {
     setPage(1)  //Load the first page
     setIsLoading(true)    //Load Loader component
 
-    fetch(`/api/search?search=${search}&searchBy=${searchBy}`)
+    fetch(`/api/v1/search?search=${search}&searchBy=${searchBy}`)
     .then(async (response) => {
       const res = await response.json();
       console.log("The result ", res);
@@ -136,7 +136,7 @@ const handleSearch = (evt) => {
     
     setIsLoading(true)    //Load Loader component
 
-    fetch(`/api/search?search=${search}&searchBy=${searchBy}&page=${page-1}`)
+    fetch(`/api/v1/search?search=${search}&searchBy=${searchBy}&page=${page-1}`)
     .then(async (response) => {
       const res = await response.json();
       console.log("The result ", res);
@@ -158,7 +158,7 @@ const handleSearch = (evt) => {
     setPage(page+1);
     setIsLoading(true)    //Load Loader component
 
-    fetch(`/api/search?search=${search}&searchBy=${searchBy}&page=${page+1}`)
+    fetch(`/api/v1/search?search=${search}&searchBy=${searchBy}&page=${page+1}`)
     .then(async (response) => {
       const res = await response.json();
       console.log("The result ", res);
@@ -180,7 +180,7 @@ const handleSearch = (evt) => {
     setIsLoading(true)    //Load Loader component
     setPage(numOfPage);
 
-    fetch(`/api/search?search=${search}&searchBy=${searchBy}&page=${numOfPage}`)
+    fetch(`/api/v1/search?search=${search}&searchBy=${searchBy}&page=${numOfPage}`)
     .then(async (response) => {
       const res = await response.json();
       console.log("The result ", res);

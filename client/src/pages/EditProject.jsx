@@ -51,7 +51,7 @@ const EditProject = () => {
    
     try {
         //Populating the edit field
-    fetch(`/api/project/${projectId}`)
+    fetch(`/api/v1/project/${projectId}`)
     .then(async (response) => {
       const res = await response.json();
       const data = res.project;
@@ -106,7 +106,7 @@ const EditProject = () => {
     console.log("Submitted")
 
     let formData = { name, abstract, authors, tags }
-    fetch(`/api/editProject/${projectId}`, {
+    fetch(`/api/v1/editProject/${projectId}`, {
       method: "PUT",
       body: JSON.stringify(formData),
       headers: {
@@ -148,7 +148,7 @@ const EditProject = () => {
     setIsLoading(true);
     console.log("Deleted")
     
-    fetch(`/api/deleteProject/${projectId}`, {
+    fetch(`/api/v1/deleteProject/${projectId}`, {
       method: "DELETE",
       headers: {
         'Content-Type': 'application/json'

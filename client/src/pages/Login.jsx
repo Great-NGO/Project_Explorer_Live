@@ -71,7 +71,7 @@ const Login = () => {
     evt.preventDefault();
     setIsLoading(true)
 
-    fetch('/api/login', {
+    fetch('/api/v1/login', {
       method: "POST",
       body: JSON.stringify({ email, password}),
       headers: {
@@ -112,7 +112,7 @@ const Login = () => {
   
     const handleGoogleClick = async (response) => {
       console.log("The Google data ", response);
-      const res = await fetch("/api/google-login", {
+      const res = await fetch("/api/v1/google-login", {
         method: "POST",
         body: JSON.stringify({
           credential: response.credential

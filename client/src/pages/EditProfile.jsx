@@ -36,8 +36,8 @@ const EditProfile = () => {
   }
 
  //We use custom hook - useFetch to populate data for programData and graduationYears from their respective APIs
- const programData = useFetch('/api/programs');
- const gradYearData = useFetch('/api/graduationYears');
+ const programData = useFetch('/api/v1/programs');
+ const gradYearData = useFetch('/api/v1/graduationYears');
 
   //Using the UseContext hook
 const {firstname, setFirstName } = useContext(UserContext).value1;
@@ -98,7 +98,7 @@ const handleInputChange = (evt) => {
     console.log("Handle Update user profile.. The FORMDATA ", formData)
 
     try {
-      const res = await axios.put(`/api/editProfile/${userId}`, formData, { headers: { "Content-Type": "multipart/form-data" }})
+      const res = await axios.put(`/api/v1/editProfile/${userId}`, formData, { headers: { "Content-Type": "multipart/form-data" }})
       console.log("The RESSS", res)
       let updatedUser = res.data.user;
       console.log("The updated User ", updatedUser)
@@ -135,7 +135,7 @@ const handleInputChange = (evt) => {
     console.log('Remove profPic was clicked');
 
     try {
-      const res = await axios.put(`/api/removeProfilePicture/${userId}`)
+      const res = await axios.put(`/api/v1/removeProfilePicture/${userId}`)
       let { user } = res.data;
       console.log("The user ", user)
       setProfilePicture(user.profilePicture)
@@ -168,7 +168,7 @@ const handleInputChange = (evt) => {
     let formData = { currentPassword, newPassword, confirmNewPassword }
 
     try {
-      const res = await axios.put(`/api/editProfile/password/${userId}`, formData, { headers: { "Content-Type": "application/json" }})
+      const res = await axios.put(`/api/v1/editProfile/password/${userId}`, formData, { headers: { "Content-Type": "application/json" }})
       console.log("REs ", res)
       dispatch({type: 'passwordSuccess'})
       setIsLoading(false)

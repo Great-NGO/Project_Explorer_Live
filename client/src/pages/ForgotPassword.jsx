@@ -26,7 +26,7 @@ const ForgotPassword = () => {
     evt.preventDefault();
     setIsLoading(true)
 
-    fetch('/api/forgotPassword', {
+    fetch('/api/v1/forgotPassword', {
       method: "POST",
       body: JSON.stringify({ email}),
       headers: {

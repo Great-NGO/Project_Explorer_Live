@@ -27,8 +27,8 @@ const ContinueSignup = () => {
     }
 
 //Use custom hook - useFetch to populate data for programs and graduation years
-const programData = useFetch('/api/programs');
-const gradYearData = useFetch('/api/graduationYears');
+const programData = useFetch('/api/v1/programs');
+const gradYearData = useFetch('/api/v1/graduationYears');
 
 // Invoking the useReducer hook and extracting input elements from our state
 const [state, dispatch] = useReducer(reducer, initialState);
@@ -61,7 +61,7 @@ useEffect(() => {
 
     let formData = { password, matricNumber, program, graduationYear };
     try {
-        const res = await axios.put(`/api/continueSignup/${userId}`, formData, { headers: { "Content-Type": "application/json" }} )   
+        const res = await axios.put(`/api/v1/continueSignup/${userId}`, formData, { headers: { "Content-Type": "application/json" }} )   
         console.log("The res ", res);
         const data = res.data;
 
