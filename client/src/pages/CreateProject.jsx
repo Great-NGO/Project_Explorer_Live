@@ -107,7 +107,7 @@ const CreateProject = () => {
       let formData = { name, abstract, authors, tags }
       console.log("The form data",formData)
     
-      fetch('/api/projects/submit', {
+      fetch('/api/v1/projects/submit', {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {

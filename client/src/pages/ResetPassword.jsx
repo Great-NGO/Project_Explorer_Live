@@ -39,7 +39,7 @@ const ResetPassword = () => {
       setIsLoading(true);
       let config = {"Content-Type": "application/json"};
       try {
-          const res = await axios.put(`/api/resetPassword/${userId}`, { newPassword, confirmNewPassword}, {headers: config})
+          const res = await axios.put(`/api/v1/resetPassword/${userId}`, { newPassword, confirmNewPassword}, {headers: config})
           console.log("REs ", res);
           dispatch({type: 'success'});
           setIsLoading(false);

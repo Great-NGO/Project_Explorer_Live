@@ -39,26 +39,26 @@ app.use(cookieParser());
 
 
 // Api Docs
-app.get("/api", (req, res) =>  {
-    const apiDocsFile = path.join(__dirname, '/api/docs/apiDocs.json')
+// app.get("/api", (req, res) =>  {
+//     const apiDocsFile = path.join(__dirname, '/api/docs/apiDocs.json')
 
-    fs.readFile(apiDocsFile, (err, data) => {
-        if(err) {
-            res.status(400).json({error:err})
-        }
-        const docs = JSON.parse(data);  //We have to parse the data because it is a buffer, JSON.parse converts into JSON a readable format.
-        console.log("THe docs", docs);
-        res.json(docs);
-    })
-})
+//     fs.readFile(apiDocsFile, (err, data) => {
+//         if(err) {
+//             res.status(400).json({error:err})
+//         }
+//         const docs = JSON.parse(data);  //We have to parse the data because it is a buffer, JSON.parse converts into JSON a readable format.
+//         console.log("THe docs", docs);
+//         res.json(docs);
+//     })
+// })
 
 //Routes
-app.use('/api', require("./controllers/auth"));
-app.use('/api', require("./controllers/home"));
-app.use('/api', require("./controllers/user"));
-app.use('/api', require("./controllers/project"));
-app.use('/api', require("./controllers/comment"));
-app.use('/api', require("./controllers/search"));
+app.use('/api/v1', require("./controllers/auth"));
+app.use('/api/v1', require("./controllers/home"));
+app.use('/api/v1', require("./controllers/user"));
+app.use('/api/v1', require("./controllers/project"));
+app.use('/api/v1', require("./controllers/comment"));
+app.use('/api/v1', require("./controllers/search"));
 
 // To show public files/Files from uploads folder
 app.use("/api/uploads", express.static('uploads'));      //Would use when i upload to cloudinary

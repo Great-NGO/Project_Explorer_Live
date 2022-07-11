@@ -47,7 +47,7 @@ const Home = () => {
 
   useEffect(() => {
 
-    fetch('/api/projectsShowcase')
+    fetch('/api/v1/projectsShowcase')
       .then(async (response) => {
         const res = await response.json();
         const data = res.projects

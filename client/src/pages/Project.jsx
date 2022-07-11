@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useReducer } from "react";
+import React, { useState, useEffect, useRef, useReducer, useMemo } from "react";
 import Layout from "./shared/Layout";
 import { Container, Button, Modal, Navbar } from "react-bootstrap";
 import { ChevronDoubleUp, ChevronDoubleDown } from "react-bootstrap-icons";
@@ -6,23 +6,31 @@ import { ChevronDoubleUp, ChevronDoubleDown } from "react-bootstrap-icons";
 import { useParams } from "react-router-dom";
 import AuthService from '../services/auth';
 import JoditEditor from "jodit-react";
+// import { DefaultEditor } from 'react-simple-wysiwyg';
+
 //Import reducer function to be used my useReducer hook
 import { reducer } from "../reducers/project";
 import Comment from "../components/comments/Comment";
+import Loader from "../components/Loader";
 
 
 // Importing the isUserProjectOwner method and getCurrentUser method
 const { isUserProjectOwner, getCurrentUser } = AuthService;
 
-const Project = () => {
+const Project = ({placeholder}) => {
 
   const editor = useRef(null);
   const [ content, setContent ] = useState('');
 
-  const config = {
+  // const config = {
+  //   readonly: false,
+  //   // placeholder: "Leave a comment..."
+  // }
+
+  const config =  useMemo({
     readonly: false,
-    // placeholder: "Leave a comment..."
-  }
+    placeholder: placeholder || "Leave a comment..."
+  }, [placeholder])
 
   const params = useParams();
 
@@ -48,6 +56,8 @@ const Project = () => {
   // To toggle between ascending or descending order
   const [sortStatus, setSortStatus ] = useState(true);
   const [userId, setUserId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showButtons, setShowButtons] = useState(false);
   // const [projectOwnerId, setProjectOwnerId] = useState(null);
   
   //Modal Code
@@ -56,18 +66,48 @@ const Project = () => {
   const handleShow = () => setShow(true);
 
 
+  // Handle Cancel Comment function
+  const handleCommentChange = (evt) => {
+    console.log("comment change")
+
+    setShowButtons(true);
+    setContent(evt.target.value)
+  }
+
+  // Handle Cancel Blur function
+  const handleCommentBlur = (evt) => {
+    console.log("comment change")
+    setShowButtons(true);
+  }
+
+  // Handle Comments Change
+  const handleCancelComment = () => {
+     //Clear input
+    editor.current.value=''
+    setShowButtons(false)
+  }
+
   //Handle Comment function
   const handleCommentSubmit = (event) => {
     event.preventDefault();
+
+    setIsLoading(true)
 
     const formData = {
       text:editor.current.value,
       projectID:project._id
     }
 
+    if(formData.text.trim().length < 2) {
+      console.log("The original length of the comment minus white space is ", formData.text.trim().length);
+      console.log("WRONG... No comment text seen")
+      alert("Failed to leave comment on project because no comment was sent")
+
+    }
+
     console.log("The comment ready to be sent", formData)
 
-    fetch('/api/project/new/comment', {
+    fetch('/api/v1/project/new/comment', {
       method: "POST",
       body: JSON.stringify(formData),
       headers: { "Content-Type": "application/json"}
@@ -87,9 +127,11 @@ const Project = () => {
         })
          //Clear input
          editor.current.value=''
+         setIsLoading(false)
 
       } else {
         alert("Failed to leave comment on project.")
+        setIsLoading(false);
       }
     })
   }
@@ -99,7 +141,7 @@ const Project = () => {
   useEffect(() => {
     console.log(`The id is: ${projectId}`);
     
-    fetch(`/api/project/${projectId}`)
+    fetch(`/api/v1/project/${projectId}`)
       .then((response) => {
         console.log(response);
         return response.json();
@@ -132,7 +174,7 @@ let { projName, projAbstract, projAuthors, projTags, createdBy, profilePicture, 
 // Sorting Methods
 const sortByDateOrLikes = (evt) => {
   const { value } = evt.target;
-  setSortOrder(value);
+  setSortOrder(value);      //This helps us with re-arranging the comments
 
   if (value === "likes") {
     console.log("Sort by likes");
@@ -175,6 +217,9 @@ const sortDescending = (evt) => {
   }
 
 }
+
+console.log("Content ", content)
+console.log("Editor Content", editor)
 
   return (
     <Layout>
@@ -344,11 +389,30 @@ const sortDescending = (evt) => {
 
                 <form onSubmit={handleCommentSubmit}>
 
-                  <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={newContent => {}}/>
+                  <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onChange={handleCommentChange} />
+                  {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={newContent => {}} /> */}
+                  {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={handleCommentChange} /> */}
+                  {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={handleCommentBlur} onChange={newContent => {}} /> */}
+                    
+                  {/* <DefaultEditor name="text" value={content} onChange={handleCommentChange} required/> */}
 
-                  <Button variant="success" type="submit" className="mt-2">
-                    Submit
-                  </Button>
+                  {showButtons ? 
+                    <div>
+                      <Button variant="danger" type="reset" className="mt-2" onClick={handleCancelComment}>
+                        Cancel
+                      </Button>
+                      
+                      <Button variant="success" type="submit" className="mt-2 mx-2" >
+                        Submit
+                      </Button>
+                    </div> 
+                     : null 
+                  }
+
+                
+
+                  {isLoading ? <Loader size={"40px"} /> : "" }
+
                 </form>
 
               </div>
