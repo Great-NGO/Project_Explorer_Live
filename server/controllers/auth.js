@@ -104,7 +104,7 @@ try {
 
 } catch (error) {
    console.log(error);
-   return res.status(400).json({error: "Something Went wrong", actualError: error, status: "NOT OK", note:"Check your internet connection" });
+   return res.status(500).json({error: "Something Went wrong", actualError: error, status: "NOT OK", note:"Check your internet connection" });
      
 }
 });
@@ -139,7 +139,7 @@ router.put('/continueSignup/:id', continueSignupValidator(), validate, async(req
                 res.status(201).json({message: "Continue Signup successful (Users correct info successfully saved)", status: "OK", user})
             }          
         } else {
-            return res.status(400).json({error: "Something went wrong.", actualError: user[1], status: "NOT OK"});
+            return res.status(404).json({error: "Something went wrong.", actualError: user[1], status: "NOT OK"});
         }
 
 
@@ -147,6 +147,7 @@ router.put('/continueSignup/:id', continueSignupValidator(), validate, async(req
     
     } catch (error) {
         console.log("The error ", error)
+        return res.status(500).json({error: "Something went wrong on our end.", actualError: error, status: "NOT OK"})
     }
 
 

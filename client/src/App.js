@@ -38,7 +38,7 @@ function App() {
         <Route path="/resetPassword/:id" element={<ResetPassword />} />
         <Route path="/continueSignup/:id" element={ <ContinueSignup />} />
 
-        <Route path="/test" element={<Test />} />
+        {/* <Route path="/test" element={<Test />} /> */}
         <Route path="*" element={ <E404 />} status={404}/>
      </Routes>
     </Router>

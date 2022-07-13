@@ -12,19 +12,20 @@ const logout = async () => {
 };
 
 const getCurrentUser = () => {
-    return getWithExpiry("user")
+  const user = getWithExpiry("user");
+  return user
 };
 
 const isUserProjectOwner = (projectCreatedById) => {
   // We get the user using the getWithExpiry Method which returns the already parsed user object if the user exists
   const user = getWithExpiry("user");
   if (user !== null) {
-    console.log(user);
+    // console.log(user);
     if (user._id === projectCreatedById) {
-      console.log("User is the Owner of Project");
+      // console.log("User is the Owner of Project");
       return true;
     } else {
-      console.log("The User is not the Owner of the Project")
+      // console.log("The User is not the Owner of the Project")
       return false;
     }
   }

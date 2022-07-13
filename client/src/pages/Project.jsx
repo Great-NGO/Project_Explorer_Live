@@ -3,7 +3,7 @@ import Layout from "./shared/Layout";
 import { Container, Button, Modal, Navbar, Form } from "react-bootstrap";
 import { ChevronDoubleUp, ChevronDoubleDown } from "react-bootstrap-icons";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AuthService from '../services/auth';
 import JoditEditor from "jodit-react";
 
@@ -16,25 +16,26 @@ import Loader from "../components/Loader";
 // Importing the isUserProjectOwner method and getCurrentUser method
 const { isUserProjectOwner, getCurrentUser } = AuthService;
 
-
 const Project = () => {
 
   const editor = useRef(null);
   const [ content, setContent ] = useState('');
 
+  // NB: set Display Button to true using onKey event as it is wrapped in memo function and fires once
   const config = useMemo(() => ({
     readonly:false,
-    placeholder: "Add a comment..."
+    placeholder: "Add a comment...",
+    events: {
+      keyup: ((e) =>  (
+        setShowButtons(true) 
+        // console.log("Event ",e) 
+      )),
+      // blur: () => alert("YEEE"),   //Blur and other events can also be handled
+    }
   }), [])
- 
-  // const config = {
-  //   readonly: false,
-  //   // placeholder: "Leave a comment..."
-  // }
-
-
 
   const params = useParams();
+  let navigate = useNavigate()
 
 //Initial states (useReducer hook to handle Change and show initial values)
     let initialState = {
@@ -67,6 +68,37 @@ const Project = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  let projectId = params.id;
+
+  useEffect(() => {
+    console.log(`The id is: ${projectId}`);
+    
+    fetch(`/api/v1/project/${projectId}`)
+      .then((response) => {
+        // console.log(response);
+        return response.json();
+      })
+      .then((data) => {
+        console.log('The Project Data: ', data);
+
+        // If Project is invalid redirect to 404 error page
+        if(data.status === "error") {
+          navigate("*", true)
+        } else {
+          data = data.project;
+          dispatch({type: 'loadProjectDetails', data:data})
+          setProject(data)
+          setComments(data.comments);
+          getCurrentUser() !== null ? setUserId(getCurrentUser()._id) : setUserId('');
+  
+        }
+     
+      })
+
+  }, [projectId, navigate]);
+
+  console.log('The Project: ', project);
+
   // // Handle Comment change function
   const handleCommentTextAreaChange = (evt) => {
     setShowButtons(true);
@@ -75,19 +107,22 @@ const Project = () => {
 
   // Handle Comment change function
   const handleCommentChange = (newContent) => {
+    // NB: Had some issues with setting display to true with onchange, so performed setDisplay to true using onKey event put in my config prop
     console.log("comment change ", newContent)
     setContent(newContent)
-    setShowButtons(true);
 
   }
 
   // Handle Comments Change
   const handleCancelComment = () => {
      //Clear input
-    // editor.current.value=''
     setContent('')
-    setShowButtons(false)
+    setCommentTextArea('')
+    setShowButtons(!showButtons)
+    
   }
+
+  console.log("cancelleed button state ", showButtons + " Content ", content)
 
   //Handle Comment function
   const handleCommentSubmit = (event) => {
@@ -100,12 +135,12 @@ const Project = () => {
       projectID:project._id
     }
 
-    if(formData.text.trim().length < 2) {
-      console.log("The original length of the comment minus white space is ", formData.text.trim().length);
-      console.log("WRONG... No comment text seen")
-      alert("Failed to leave comment on project because no comment was sent")
+    // if(formData.text.trim().length < 2) {
+    //   console.log("The original length of the comment minus white space is ", formData.text.trim().length);
+    //   console.log("WRONG... No comment text seen")
+    //   alert("Failed to leave comment on project because no comment was sent")
 
-    }
+    // }
 
     console.log("The comment ready to be sent", formData)
 
@@ -122,14 +157,14 @@ const Project = () => {
         const newComments = data.data.comments;
         console.log("The new comments ", newComments)
         setComments(newComments);
+         //Clear input
+         setContent('');
+         setIsLoading(false)
         // To scroll to the top (on smaller screens) after comment has been left
         window.scrollTo({
           top: 0,
           behavior: "smooth"
         })
-         //Clear input
-         editor.current.value=''
-         setIsLoading(false)
 
       } else {
         alert("Failed to leave comment on project.")
@@ -137,38 +172,6 @@ const Project = () => {
       }
     })
   }
-
-  let projectId = params.id;
-
-  useEffect(() => {
-    console.log(`The id is: ${projectId}`);
-    
-    fetch(`/api/v1/project/${projectId}`)
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((data) => {
-        console.log('The Project Data: ', data);
-        data = data.project;
-
-        dispatch({type: 'loadProjectDetails', data:data})
-        setProject(data)
-        // console.log('The Project Data: ', project);
-        setComments(data.comments);
-    
-        getCurrentUser() !== null ? setUserId(getCurrentUser()._id) : setUserId('');
-
-      })
-      .catch((err) => {
-        console.log("Error is: ", err);
-      });
-
-
-
-  }, [projectId]);
-
-  console.log('The Project: ', project);
 
 
 //Invoking the useReducer hook and extracting input elements from our state
@@ -400,13 +403,13 @@ console.log("Stripped string value", strippedString);
 
                   {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={newContent => {}} /> */}
 
-                  <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onChange={handleCommentChange} />
+                  <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onChange={handleCommentChange}/>
 
                   {/* <Form.Control as="textarea" rows={6} name="commentTextArea" className="mt-2" value={commentTextArea} onChange={handleCommentTextAreaChange} placeholder={"Leave a comment...."} /> */}
 
                   {showButtons ? 
                     <div>
-                      <Button variant="danger" type="submit" className="mt-2" onClick={handleCancelComment}>
+                      <Button variant="danger" type="button" className="mt-2" onClick={handleCancelComment}>
                         Cancel
                       </Button>
                       
