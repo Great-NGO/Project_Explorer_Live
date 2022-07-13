@@ -100,11 +100,18 @@ const Home = () => {
                               <>
                                {object.userId === userId ? 
                                  <>
-                                    {object.count > 50 ? 
-                                      <p>You've visited this project more than 50 times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
-                                         :
-                                      <p>You've visited this project: {object.count} times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
 
+                                    {object.count > 100 ? 
+                                      <p>You've visited this project many times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+                                       :
+                                      <>
+                                      {object.count > 50 ? 
+                                        <p>You've visited this project more than 50 times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+                                           :
+                                        <p>You've visited this project: {object.count} times. <br/> Last visited {new Date(object.date).toLocaleDateString('en-GB')} </p>
+  
+                                      }
+                                      </>
                                     }
                                             
                                        </> : null

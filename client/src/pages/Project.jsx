@@ -1,36 +1,38 @@
 import React, { useState, useEffect, useRef, useReducer, useMemo } from "react";
 import Layout from "./shared/Layout";
-import { Container, Button, Modal, Navbar } from "react-bootstrap";
+import { Container, Button, Modal, Navbar, Form } from "react-bootstrap";
 import { ChevronDoubleUp, ChevronDoubleDown } from "react-bootstrap-icons";
 
 import { useParams } from "react-router-dom";
 import AuthService from '../services/auth';
 import JoditEditor from "jodit-react";
-// import { DefaultEditor } from 'react-simple-wysiwyg';
 
 //Import reducer function to be used my useReducer hook
 import { reducer } from "../reducers/project";
 import Comment from "../components/comments/Comment";
 import Loader from "../components/Loader";
-
+// import Editor from "../components/TextEditor/Editor";
 
 // Importing the isUserProjectOwner method and getCurrentUser method
 const { isUserProjectOwner, getCurrentUser } = AuthService;
 
-const Project = ({placeholder}) => {
+
+const Project = () => {
 
   const editor = useRef(null);
   const [ content, setContent ] = useState('');
 
+  const config = useMemo(() => ({
+    readonly:false,
+    placeholder: "Add a comment..."
+  }), [])
+ 
   // const config = {
   //   readonly: false,
   //   // placeholder: "Leave a comment..."
   // }
 
-  const config =  useMemo({
-    readonly: false,
-    placeholder: placeholder || "Leave a comment..."
-  }, [placeholder])
+
 
   const params = useParams();
 
@@ -58,32 +60,32 @@ const Project = ({placeholder}) => {
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
-  // const [projectOwnerId, setProjectOwnerId] = useState(null);
+  const [commentTextArea, setCommentTextArea] = useState('');
   
   //Modal Code
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-
-  // Handle Cancel Comment function
-  const handleCommentChange = (evt) => {
-    console.log("comment change")
-
+  // // Handle Comment change function
+  const handleCommentTextAreaChange = (evt) => {
     setShowButtons(true);
-    setContent(evt.target.value)
+    setCommentTextArea(evt.target.value)
   }
 
-  // Handle Cancel Blur function
-  const handleCommentBlur = (evt) => {
-    console.log("comment change")
+  // Handle Comment change function
+  const handleCommentChange = (newContent) => {
+    console.log("comment change ", newContent)
+    setContent(newContent)
     setShowButtons(true);
+
   }
 
   // Handle Comments Change
   const handleCancelComment = () => {
      //Clear input
-    editor.current.value=''
+    // editor.current.value=''
+    setContent('')
     setShowButtons(false)
   }
 
@@ -161,6 +163,9 @@ const Project = ({placeholder}) => {
       .catch((err) => {
         console.log("Error is: ", err);
       });
+
+
+
   }, [projectId]);
 
   console.log('The Project: ', project);
@@ -218,8 +223,12 @@ const sortDescending = (evt) => {
 
 }
 
+
 console.log("Content ", content)
-console.log("Editor Content", editor)
+let strippedString = content.replace(/(<([^>]+)>)|&nbsp;|&zwnj;/gi, "") || commentTextArea.trim();    
+
+console.log("Stripped string value", strippedString);
+
 
   return (
     <Layout>
@@ -387,33 +396,31 @@ console.log("Editor Content", editor)
               <div className="col-md-8" id="comments">
                 <h4> Leave a Comment</h4>
 
-                <form onSubmit={handleCommentSubmit}>
+                <Form onSubmit={handleCommentSubmit}>
+
+                  {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={newContent => {}} /> */}
 
                   <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onChange={handleCommentChange} />
-                  {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={newContent => {}} /> */}
-                  {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={handleCommentChange} /> */}
-                  {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={handleCommentBlur} onChange={newContent => {}} /> */}
-                    
-                  {/* <DefaultEditor name="text" value={content} onChange={handleCommentChange} required/> */}
+
+                  {/* <Form.Control as="textarea" rows={6} name="commentTextArea" className="mt-2" value={commentTextArea} onChange={handleCommentTextAreaChange} placeholder={"Leave a comment...."} /> */}
 
                   {showButtons ? 
                     <div>
-                      <Button variant="danger" type="reset" className="mt-2" onClick={handleCancelComment}>
+                      <Button variant="danger" type="submit" className="mt-2" onClick={handleCancelComment}>
                         Cancel
                       </Button>
                       
-                      <Button variant="success" type="submit" className="mt-2 mx-2" >
-                        Submit
+                      <Button variant="success" type="submit" className="mt-2 mx-2" disabled={strippedString < 1? true : false}>
+                        {/* Submit */}
+                        Comment
                       </Button>
                     </div> 
                      : null 
                   }
 
-                
-
                   {isLoading ? <Loader size={"40px"} /> : "" }
 
-                </form>
+                </Form>
 
               </div>
             </div>

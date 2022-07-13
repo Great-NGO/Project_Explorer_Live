@@ -154,11 +154,14 @@ const updateLastViewed = async(id, userId) => {
   let project = await Project.findById(id);
   console.log("Project ", project);
 
+  // let projectVisit = await Project.findOne({ _id: id, 'lastVisited.userId': userId })
+  // console.log("The project visit", projectVisit);
+
   // Find the index of the user last visit
   let userLastViewedIndex = project.lastVisited.findIndex(visit => visit.userId == userId);
-  
+  console.log("The user last viewed index ", userLastViewedIndex);
   // If user has visited the project
-  if(userLastViewedIndex >= 0) {
+  if(userLastViewedIndex > -1) {
     let userLastVisited = project.lastVisited[userLastViewedIndex];
     console.log("The last visited info before ", userLastVisited);
     userLastVisited.count +=1;  //Increase the count by 1
