@@ -10,6 +10,8 @@ exports.connectToDB = async () => {
   // mongoose.set("bufferCommands", false);
 
   //Connecting to the database.
+
+  console.log("The MongoDB uri ", MONGODB_URI);
   await mongoose
     .connect(MONGODB_URI, {
       useNewUrlParser: true,

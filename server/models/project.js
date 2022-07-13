@@ -7,7 +7,7 @@ const ProjectSchema = new Schema(
   {
     name: { type: String, required: true },
     abstract: { type: String, required: true },
-    authors: { type: [String], required: true, unique: true },
+    authors: { type: [String], required: true },
     tags: [String],
     createdBy: { type: mongoose.ObjectId, required: true, ref: "user" },
     comments: [{ type: mongoose.ObjectId, ref: "comment" }],
@@ -39,7 +39,6 @@ const ProjectSchema = new Schema(
         userId: {
           type: mongoose.ObjectId,
           ref: "user",
-          unique: true
         },
         count: {
           type: Number,

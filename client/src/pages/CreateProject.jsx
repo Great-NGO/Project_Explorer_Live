@@ -128,7 +128,8 @@ const CreateProject = () => {
           }
           else {
             console.log(data.errors);
-            dispatch({ type: 'error', payload: data.errors})
+            data.errors ? dispatch({ type: 'error', payload: data.errors}) : dispatch({type: 'error', payload: [data.error]})
+
             setIsLoading(false)   //Remove loader component after message has been displayed
             // To scroll to the top (on smaller screens) after load is complete
             window.scrollTo({
