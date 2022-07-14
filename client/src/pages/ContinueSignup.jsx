@@ -40,12 +40,25 @@ const { getCurrentUser } = AuthService;
 
 useEffect(() => {
     console.log("The new User ID from google is ", userId)
+
     const user = getCurrentUser();
     console.log("The user is: ", user)
-    // Run the dispatch function which loads our details
-    dispatch({type: 'loadContinueSignupDetails', data:user})
+ 
+    fetch(`/api/v1/user/${userId}`)
+    .then((res) => {
+      return res.json()
+    }).then((data) => {
+      console.log("The data", data)
+      // If wrong data from url show 404 page
+      if(data.status === "error") {
+        navigate("*", true)
+      } else {
+        // Run the dispatch function which loads our details
+        dispatch({type: 'loadContinueSignupDetails', data:user})
+      }
+    })
 
-  }, [getCurrentUser, userId])
+  }, [getCurrentUser, userId, navigate])
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -132,7 +145,7 @@ useEffect(() => {
                 <Form.Group as={Col} controlId="formGridMatricNo" sm={6}>
                   <Form.Label>Matriculation Number</Form.Label>
                   <Form.Control
-                    placeholder="e.g 16/2020"
+                    placeholder="Your Matric number"
                     value={matricNumber}
                     name="matricNumber"
                     onChange={handleInputChange}

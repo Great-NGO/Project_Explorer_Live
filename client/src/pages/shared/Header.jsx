@@ -73,7 +73,7 @@ const Header = () => {
   }
   
 
-  console.log("The firstname ", firstname)
+  // console.log("The firstname ", firstname)
   return (
 
     

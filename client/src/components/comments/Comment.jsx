@@ -3,7 +3,7 @@ import parse from 'html-react-parser'; //Outputting html content
 import { Button, Form } from 'react-bootstrap';
 import JoditEditor from 'jodit-react';
 import { HandThumbsUp, HandThumbsUpFill } from 'react-bootstrap-icons';
-import { format, formatDistance,  subDays } from 'date-fns'
+import { format, formatDistanceToNow} from 'date-fns'
 
 
 const Comment = ({comment, currentUser, project}) => {
@@ -168,10 +168,8 @@ const Comment = ({comment, currentUser, project}) => {
 
                 <span>
                 {/* {(new Date()).toLocaleDateString('en-US', comment.createdAt)} */}
-                {/* {formatDistance(subDays(new Date(comment.createdAt), 3), new Date(), { addSuffix: true })} */}
-                {formatDistance(subDays(new Date(), 3), new Date(comment.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true, includeSeconds:true})}
                 {/* {moment(commentState.createdAt).fromNow()} &nbsp; */}
-                {/* <ReactTimeAgo date={comment.createdAt} locale="en-US" timeStyle="twitter" /> */}
                 </span>
   
             </div>

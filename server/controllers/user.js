@@ -21,7 +21,7 @@ router.get('/user/:id', async(req, res) => {
     if(user[0] !== false) {
         res.json({status: "OK", data:user[1], user:user[1]});
     } else {
-        return res.status(400).json({status: "error", error: user[1]})
+        return res.status(404).json({status: "error", error: user[1]})
     }
 })
 
@@ -292,7 +292,7 @@ router.put('/resetPassword/:id', resetPasswordValidator(), validate, async (req,
         res.json({message: "Password reset successfully", status: "Reset OK"})
     }
     else {
-        return res.status(400).json({errors: ["OOPs! Something went wrong. Please try again later."]})
+        return res.status(400).json({errors: ["OOPs! Something went wrong. Please try again later."], status: "error"})
     }
 
 })
