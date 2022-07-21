@@ -70,6 +70,18 @@ html, body {
   background-color: whitesmoke;
 }
 
+
+/* COMMENTING */
+.div-inline{
+  /* display:inline-block; */
+  display:inline-flex;
+  
+  padding-bottom: 30px;
+  float: right;
+  /* align-items: flex-end; */
+}
+
+
 @media screen and (max-width:700px) {
   .showcase {
       margin: 20px auto;

@@ -135,13 +135,6 @@ const Project = () => {
       projectID:project._id
     }
 
-    // if(formData.text.trim().length < 2) {
-    //   console.log("The original length of the comment minus white space is ", formData.text.trim().length);
-    //   console.log("WRONG... No comment text seen")
-    //   alert("Failed to leave comment on project because no comment was sent")
-
-    // }
-
     console.log("The comment ready to be sent", formData)
 
     fetch('/api/v1/project/new/comment', {
