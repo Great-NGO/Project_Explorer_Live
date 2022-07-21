@@ -176,10 +176,12 @@ router.post('/project/comment/new/reply', checkUser, createReplyValidator, async
                 // we create a new notification document for Project Owner
                 const newNotification1 = await createNewNotification({ notificationOwner:notificationOwner1, notificationMaker:currentUser, actionType, projectId, commentId })
                 console.log("<<Project Owner New Notification for Reply ", newNotification1);
-                // we create a new notification document for Comment Author
-                const newNotification2 = await createNewNotification({ notificationOwner:notificationOwner2, notificationMaker:currentUser, actionType, projectId, commentId }) 
-                console.log("<<Comment Author New Notification for Reply ", newNotification2);
-                
+                // we create a new notification document for Comment Author if comment Author is not a guest
+                if(notificationOwner2 !== undefined) {
+                    const newNotification2 = await createNewNotification({ notificationOwner:notificationOwner2, notificationMaker:currentUser, actionType, projectId, commentId }) 
+                    console.log("<<Comment Author New Notification for Reply ", newNotification2);    
+                }
+
                 if (updatedCommentWithReply[0] !== false) {
                     console.log("Replies saved and added to comment successfully");
                     res.status(200).json({ status: "ok", data: updatedCommentWithReply[1] });
@@ -302,10 +304,12 @@ router.post('/comment/like', authorize, async (req, res) => {
                 let actionType = 'Like';
                 let projectId = comment.projectID;
                 let notificationMaker = currentUser;
+                console.log("notification owner", notificationOwner);
                 //WE USE OUR createNewNotification method
-                const newNotification = await createNewNotification({ notificationOwner, notificationMaker, actionType, projectId, commentId })
-
-                console.log("<<New Notification for Like >", newNotification);
+                if(notificationOwner !== undefined) {   //Only create notification when there is a notification owner (A Comment author)
+                    const newNotification = await createNewNotification({ notificationOwner, notificationMaker, actionType, projectId, commentId })
+                    console.log("<<New Notification for Like >", newNotification);
+                }
 
                 res.status(200).json({ status: "OK", like, message:"Like comment successful" });
             }
