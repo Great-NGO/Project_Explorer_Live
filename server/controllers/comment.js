@@ -85,7 +85,7 @@ router.put('/project/:id/edit/comment/:commentId', checkUser, authorize, async (
         
             if (check[0] !== false) {
                 console.log("Comments updated successfully");
-                res.status(200).json({ status: "OK", data: check[1] });
+                res.status(200).json({ status: "ok", data: check[1], updatedComment:updatedComment[1] });
             } else {
                 // If invalid project id or project has been deleted
                 return res.status(422).json({error: "Project with comment not found. Failed to edit comment.", actualError: check[1], status:"error"})
@@ -116,7 +116,7 @@ router.delete('/project/:id/delete/comment/:commentId', checkUser, authorize, as
             project.comments = project.comments.pull(commentId);
             await updateProject(id, project);
             console.log(`Project after comment was removed`, project);
-            res.status(200).json({message: "Comment removed successfully.", status:"OK"})
+            res.status(200).json({message: "Comment removed successfully.", status:"OK", deletedComment:deletedComment[1]})
             
         } else {
             console.log("FAILED TO DELETE COMMENT")
@@ -224,7 +224,7 @@ router.put('/comment/:commentId/edit/reply/:id', checkUser, authorize, async (re
         
             if (check[0] !== false) {
                 console.log("Reply updated successfully");
-                res.status(200).json({ status: "OK", data: check[1] });
+                res.status(200).json({ status: "OK", data: check[1], updatedReply:updatedReply[1] });
             } else {
                 // If invalid comment id or comment has been deleted
                 return res.status(422).json({error: "Comment with reply not found. Failed to edit reply", actualError: check[1], status:"error"})
@@ -255,7 +255,7 @@ router.delete('/comment/:commentId/delete/reply/:id', checkUser, authorize, asyn
             comment.replies = comment.replies.pull(replyId);
             await updateComment(commentId, comment);
             console.log(`Comment after reply was removed`, comment);
-            res.status(200).json({message: "Reply removed successfully.", status:"OK"})
+            res.status(200).json({message: "Reply removed successfully.", status:"OK", deletedReply:deletedReply[1]})
             
         } else {
             console.log("FAILED TO DELETE REPLY")

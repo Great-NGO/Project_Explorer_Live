@@ -328,12 +328,12 @@ const handleSearch = (evt) => {
 
               <Row>
                 <Col>
-                  <Pagination className="justify-content-center">
-                    <Pagination.First onClick={handleClickFirst} disabled={page<=1 ? true : false}></Pagination.First>
-                    <Pagination.Prev onClick={handleClickPrevious} disabled={page<=1 ? true : false}></Pagination.Prev>
-                    <Pagination.Item active>{currentPage}</Pagination.Item>
-                    <Pagination.Next onClick={handleClickNext} disabled={page===numOfPage || page === 0 ? true : false} ></Pagination.Next>
-                    <Pagination.Last onClick={handleClickLast} disabled={page===numOfPage || page === 0 ? true : false}></Pagination.Last>
+                  <Pagination className="justify-content-center pagination">
+                    <Pagination.First onClick={handleClickFirst} className="paginationNavs" disabled={page<=1 ? true : false}></Pagination.First>
+                    <Pagination.Prev onClick={handleClickPrevious} className="paginationNavs" disabled={page<=1 ? true : false}></Pagination.Prev>
+                    <Pagination.Item active className="paginationNavsActive">{currentPage}</Pagination.Item>
+                    <Pagination.Next onClick={handleClickNext} className="paginationNavs" disabled={page===numOfPage || page === 0 ? true : false} ></Pagination.Next>
+                    <Pagination.Last onClick={handleClickLast} className="paginationNavs" disabled={page===numOfPage || page === 0 ? true : false}></Pagination.Last>
                   </Pagination>          
                 </Col>
               </Row>
