@@ -266,6 +266,28 @@ html, body {
   color: dodgerblue;
 }
 
+/* Pagination styles.. green background and color for text */
+/* .pagination {
+  z-index:3;
+  color: #fff !important;
+  background-color: red !important;
+} */
+
+/* .paginationNavs {
+    border: none !important;
+} */
+
+a.page-link {
+  color: #198754 !important;
+}
+
+.paginationNavsActive span.page-link {
+
+  color: #fff !important;
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+  /* border: none; */
+}
 
 /* view Project Page */
 

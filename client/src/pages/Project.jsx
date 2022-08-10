@@ -5,12 +5,13 @@ import { ChevronDoubleUp, ChevronDoubleDown } from "react-bootstrap-icons";
 
 import { useNavigate, useParams } from "react-router-dom";
 import AuthService from '../services/auth';
-import JoditEditor from "jodit-react";
+// import JoditEditor from "jodit-react";
 
 //Import reducer function to be used my useReducer hook
 import { reducer } from "../reducers/project";
 import Comment from "../components/comments/Comment";
 import Loader from "../components/Loader";
+import CommentForm from "../components/comments/CommentForm";
 // import Editor from "../components/TextEditor/Editor";
 
 // Importing the isUserProjectOwner method and getCurrentUser method
@@ -22,17 +23,17 @@ const Project = () => {
   const [ content, setContent ] = useState('');
 
   // NB: set Display Button to true using onKey event as it is wrapped in memo function and fires once
-  const config = useMemo(() => ({
-    readonly:false,
-    placeholder: "Add a comment...",
-    events: {
-      keyup: ((e) =>  (
-        setShowButtons(true) 
-        // console.log("Event ",e) 
-      )),
-      // blur: () => alert("YEEE"),   //Blur and other events can also be handled
-    }
-  }), [])
+  // const config = useMemo(() => ({
+  //   readonly:false,
+  //   placeholder: "Add a comment...",
+  //   events: {
+  //     keyup: ((e) =>  (
+  //       setShowButtons(true) 
+  //       // console.log("Event ",e) 
+  //     )),
+  //     // blur: () => alert("YEEE"),   //Blur and other events can also be handled
+  //   }
+  // }), [])
 
   const params = useParams();
   let navigate = useNavigate()
@@ -100,29 +101,29 @@ const Project = () => {
   console.log('The Project: ', project);
 
   // // Handle Comment change function
-  const handleCommentTextAreaChange = (evt) => {
-    setShowButtons(true);
-    setCommentTextArea(evt.target.value)
-  }
+  // const handleCommentTextAreaChange = (evt) => {
+  //   setShowButtons(true);
+  //   setCommentTextArea(evt.target.value)
+  // }
 
   // Handle Comment change function
-  const handleCommentChange = (newContent) => {
-    // NB: Had some issues with setting display to true with onchange, so performed setDisplay to true using onKey event put in my config prop
-    console.log("comment change ", newContent)
-    setContent(newContent)
+  // const handleCommentChange = (newContent) => {
+  //   // NB: Had some issues with setting display to true with onchange, so performed setDisplay to true using onKey event put in my config prop
+  //   console.log("comment change ", newContent)
+  //   setContent(newContent)
 
-  }
+  // }
 
   // Handle Comments Change
-  const handleCancelComment = () => {
-     //Clear input
-    setContent('')
-    setCommentTextArea('')
-    setShowButtons(!showButtons)
+  // const handleCancelComment = () => {
+  //    //Clear input
+  //   setContent('')
+  //   setCommentTextArea('')
+  //   setShowButtons(!showButtons)
     
-  }
+  // }
 
-  console.log("cancelleed button state ", showButtons + " Content ", content)
+  // console.log("cancelleed button state ", showButtons + " Content ", content)
 
   //Handle Comment function
   const handleCommentSubmit = (event) => {
@@ -131,7 +132,7 @@ const Project = () => {
     setIsLoading(true)
 
     const formData = {
-      text:editor.current.value,
+      text:editor.current.value || commentTextArea,
       projectID:project._id
     }
 
@@ -152,6 +153,8 @@ const Project = () => {
         setComments(newComments);
          //Clear input
          setContent('');
+         setCommentTextArea('')
+         setShowButtons(false);
          setIsLoading(false)
         // To scroll to the top (on smaller screens) after comment has been left
         window.scrollTo({
@@ -166,6 +169,75 @@ const Project = () => {
     })
   }
 
+  //Handle Comment function
+  const commentSubmit = (text) => {
+
+    setIsLoading(true)
+
+    const formData = {
+      text:text,
+      projectID:project._id
+    }
+
+    console.log("The comment ready to be sent", formData)
+
+    fetch('/api/v1/project/new/comment', {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: { "Content-Type": "application/json"}
+    }).then((res) => {
+      console.log("The comment res", res)
+      return res.json()
+    }).then((data) => {
+      console.log("The data ", data)
+      if(data.status === "ok" || data.status !== "error") {
+        
+        const newComments = data.data.comments;
+        console.log("The new comments ", newComments)
+        setComments(newComments);
+        setIsLoading(false);
+        
+      } else {
+        alert("Failed to leave comment on project.")
+        setIsLoading(false);
+        
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+      alert("Failed to leave comment on project. Check network connection")
+      setIsLoading(false);
+      
+    })
+  }
+
+  const deleteComment = (commentId) => {
+
+    console.log("Delete Comment from project");
+
+
+    fetch(`/api/v1/project/${project._id}/delete/comment/${commentId}`, {
+      method: "DELETE",
+      headers: {"Content-Type": "application/json"}
+    }).then((res) => {
+      return res.json()
+    }).then((data) => {
+      console.log("The Deleted Data", data)
+      if(data.status === "OK" || data.status !== "error") {
+        // Map through/Filter the Comments array and return an array where the deleted comment is not present
+        const newComments = comments.filter((comm) => comm._id !== commentId);
+    
+        console.log("The result ater delete ", newComments);
+        setComments(newComments)
+
+      } else {
+        alert("Failed to delete comment.");
+      } 
+    }).catch((err) => {
+      console.log(err)
+      alert("Failed to delete comment. Check network connection.");
+    })
+  }
 
 //Invoking the useReducer hook and extracting input elements from our state
 const [state, dispatch] = useReducer(reducer, initialState);
@@ -371,12 +443,15 @@ console.log("Stripped string value", strippedString);
                   </div>
                   <hr></hr>
 
+                  {/* Import Comment Form */}
+                  <CommentForm initialText={""} type="comment" placeholderText={"Leave a Comment ..."} labelButtonText="Comment" handleSubmit={commentSubmit} loadedState={isLoading} shouldShowButtons={false} /> 
+
                   {/* Load Comments */}
                   <div className="row">
                     <div className="comments">
                       {comments.map((comment) => (<Comment
                         project={project}
-                        comment={comment} currentUser={userId} key={comment._id} />))}
+                        comment={comment} currentUser={userId} key={comment._id} deleteHandler={deleteComment}/>))}
                     </div>
 
                   </div>
@@ -387,7 +462,7 @@ console.log("Stripped string value", strippedString);
             </div>
 
 
-            <div className="row mt-5">
+            {/* <div className="row mt-5">
 
               <div className="col-md-8" id="comments">
                 <h4> Leave a Comment</h4>
@@ -396,30 +471,30 @@ console.log("Stripped string value", strippedString);
 
                   {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onBlur={newContent => setContent(newContent)} onChange={newContent => {}} /> */}
 
-                  <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onChange={handleCommentChange}/>
+                  {/* <JoditEditor ref={editor} value={content} config={config} tabIndex={1} onChange={handleCommentChange}/> */}
 
                   {/* <Form.Control as="textarea" rows={6} name="commentTextArea" className="mt-2" value={commentTextArea} onChange={handleCommentTextAreaChange} placeholder={"Leave a comment...."} /> */}
 
-                  {showButtons ? 
+                  {/* {showButtons ? 
                     <div>
                       <Button variant="danger" type="button" className="mt-2" onClick={handleCancelComment}>
                         Cancel
-                      </Button>
+                      </Button> */}
                       
-                      <Button variant="success" type="submit" className="mt-2 mx-2" disabled={strippedString < 1? true : false}>
+                      {/* <Button variant="success" type="submit" className="mt-2 mx-2" disabled={strippedString < 1? true : false}> */}
                         {/* Submit */}
-                        Comment
-                      </Button>
-                    </div> 
-                     : null 
-                  }
+                        {/* Comment */}
+                      {/* </Button> */}
+                    {/* </div>  */}
+                     {/* : null  */}
+                  {/* } */}
 
-                  {isLoading ? <Loader size={"40px"} /> : "" }
+                  {/* {isLoading ? <Loader size={"40px"} /> : "" } */}
 
-                </Form>
+                {/* </Form> */}
 
-              </div>
-            </div>
+              {/* </div> */}
+            {/* </div> */} 
 
           </section>
         </Container>
