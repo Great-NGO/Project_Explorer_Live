@@ -12,6 +12,8 @@ exports.connectToDB = async () => {
   //Connecting to the database.
 
   console.log("The MongoDB uri ", MONGODB_URI);
+
+  mongoose.set('strictQuery', false); 
   await mongoose
     .connect(MONGODB_URI, {
       useNewUrlParser: true,
