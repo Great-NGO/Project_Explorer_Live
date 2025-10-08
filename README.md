@@ -54,9 +54,9 @@ Make sure to create a `.env` file in both the `client` and `server` directories 
   * `PORT=5000`
   * `MONGODB_URI=your_mongo_connection_string`
   * `JWT_SECRET=your_jwt_secret`
-* **Client (.env):**
+* **Client (src/setupProxy.js):**
 
-  * `REACT_APP_API_URL=http://localhost:5000`
+  * Change the 'target' value to point to whatever url your backend is sitting on, e.g. localhost:4000 or https://yourdomainname.com
 
 ### 4. Run the application:
 
@@ -64,13 +64,14 @@ Make sure to create a `.env` file in both the `client` and `server` directories 
 
 ```bash
 cd client
-npm start or npm run dev
+npm start #or npm run dev, depending on your preference and setup
 ```
 
 #### Backend:
 
 ```bash
-npm start
+#Make sure you are in the root directory
+npm start #or npm run dev, depending on your preference and setup
 ```
 
 ### 5. Access the app:
@@ -93,4 +94,4 @@ Feel free to fork the repository and submit pull requests for any improvements, 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
